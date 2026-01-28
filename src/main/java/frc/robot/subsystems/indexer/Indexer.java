@@ -1,11 +1,12 @@
-package frc.robot.subsystem.indexer;
+package frc.robot.subsystems.indexer;
 
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystem.indexer.IndexerIO.IndexerIOInputs;
+import frc.robot.subsystems.indexer.IndexerIOInputsAutoLogged;
+import frc.robot.subsystems.indexer.IndexerIO.IndexerIOInputs;
 
 public class Indexer extends SubsystemBase {
     private final IndexerIO io;

@@ -1,4 +1,4 @@
-package frc.robot.subsystem.shooter;
+package frc.robot.subsystems.shooter;
 
 import java.util.function.DoubleSupplier;
 

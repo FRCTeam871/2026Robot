@@ -14,8 +14,8 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.subsystem.turret.TurretIO;
-import frc.robot.subsystem.turret.TurretIOReal;
+import frc.robot.subsystems.turret.TurretIO;
+import frc.robot.subsystems.turret.TurretIOReal;
 
 public class Robot extends LoggedRobot {
   private Command m_autonomousCommand;

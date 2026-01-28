@@ -1,4 +1,4 @@
-package frc.robot.subsystem.indexer;
+package frc.robot.subsystems.indexer;
 
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;

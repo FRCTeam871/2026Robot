@@ -1,4 +1,4 @@
-package frc.robot.subsystem.intake;
+package frc.robot.subsystems.intake;
 
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;

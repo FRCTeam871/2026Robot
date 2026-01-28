@@ -1,4 +1,4 @@
-package frc.robot.subsystem.shooter;
+package frc.robot.subsystems.shooter;
 
 import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.Radians;
@@ -22,6 +22,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.MutAngle;
 import edu.wpi.first.units.measure.MutAngularVelocity;
 import edu.wpi.first.units.measure.MutVoltage;
@@ -31,7 +32,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-import frc.robot.subsystem.shooter.ShooterIO.ShooterIOInputs;
+import frc.robot.subsystems.shooter.ShooterIOInputsAutoLogged;
+import frc.robot.subsystems.shooter.ShooterIO.ShooterIOInputs;
 
 //https://www.reca.lc/flywheel?currentLimit=%7B%22s%22%3A40%2C%22u%22%3A%22A%22%7D&efficiency=50&flywheelMomentOfInertia=%7B%22s%22%3A0%2C%22u%22%3A%22in2%2Albs%22%7D&flywheelRadius=%7B%22s%22%3A0%2C%22u%22%3A%22in%22%7D&flywheelRatio=%7B%22magnitude%22%3A1%2C%22ratioType%22%3A%22Reduction%22%7D&flywheelWeight=%7B%22s%22%3A0%2C%22u%22%3A%22lbs%22%7D&motor=%7B%22quantity%22%3A2%2C%22name%22%3A%22NEO%20Vortex%22%7D&motorRatio=%7B%22magnitude%22%3A1.33%2C%22ratioType%22%3A%22Reduction%22%7D&projectileRadius=%7B%22s%22%3A2%2C%22u%22%3A%22in%22%7D&projectileWeight=%7B%22s%22%3A0.5%2C%22u%22%3A%22lbs%22%7D&shooterMomentOfInertia=%7B%22s%22%3A5%2C%22u%22%3A%22in2%2Albs%22%7D&shooterRadius=%7B%22s%22%3A2%2C%22u%22%3A%22in%22%7D&shooterTargetSpeed=%7B%22s%22%3A5000%2C%22u%22%3A%22rpm%22%7D&shooterWeight=%7B%22s%22%3A2.5%2C%22u%22%3A%22lbs%22%7D&useCustomFlywheelMoi=0&useCustomShooterMoi=0
 public class Shooter extends SubsystemBase {
@@ -57,6 +59,17 @@ public class Shooter extends SubsystemBase {
 
     private void motorVoltageSetter(Voltage v) {
         io.setVoltage(v);
+    }
+
+    
+    private AngularVelocity convertShootSpeedToRPM(LinearVelocity shootSpeed) {
+         AngularVelocity desiredRPM = null;
+         return desiredRPM;
+    }
+
+    public void setShooterSpeed(LinearVelocity speed){
+        AngularVelocity RPM = convertShootSpeedToRPM(speed);
+        io.setMotorSetpoint(RPM);
     }
 
     private void motorLogSetter(SysIdRoutineLog log) {
