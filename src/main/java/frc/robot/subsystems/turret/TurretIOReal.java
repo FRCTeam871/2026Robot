@@ -9,7 +9,6 @@ public class TurretIOReal implements TurretIO{
     private final SparkFlex turretMotor;
 
     public TurretIOReal() {
-        // NEED ACTUAL IDS
         this.turretMotor = new SparkFlex(16, MotorType.kBrushless);
     }
 

@@ -33,9 +33,7 @@ public class ShooterIOReal implements ShooterIO {
     private final SparkFlexConfig config;
     private final RelativeEncoder m_shooterEncoder;
     private SparkClosedLoopController m_shooterMotorController;
-    PIDController shooterPIDController;
     SysIdRoutine routine;
-    SimpleMotorFeedforward shooterMotorFeedForward;
 
     public ShooterIOReal() {
         this.shooterMotor = new SparkFlex(13, MotorType.kBrushless);
@@ -44,11 +42,10 @@ public class ShooterIOReal implements ShooterIO {
         
 
         this.config = new SparkFlexConfig();
-        updatePIDConstants(0.0035, 0, 0.000165, 0.0035, 0.001751, 0.00040043);
+        updatePIDConstants(0.0005, 0, 0.04, 0.0035, 0.001751, 0.00040043);
         SmartDashboard.putData(applyPIDConstants());
 
-        shooterMotorFeedForward = new SimpleMotorFeedforward(0.0035, 0.001751, 0.00040043);  // PLACEHOLAR
-        shooterPIDController = new PIDController(0.0035, 0, 0.000165);
+       
         
     }
 
@@ -66,6 +63,7 @@ public class ShooterIOReal implements ShooterIO {
         SmartDashboard.putNumber("Shooter/PID/kS", kS);
         SmartDashboard.putNumber("Shooter/PID/kV", kV);
         SmartDashboard.putNumber("Shooter/PID/kA", kA);
+        System.out.printf("%f %f %f %f %f %f \n", kP, kI, kD, kS, kV, kA);
     }
     
     @Override
@@ -99,7 +97,7 @@ public class ShooterIOReal implements ShooterIO {
             double kV = SmartDashboard.getNumber("Shooter/PID/kV", 0);
             double kA = SmartDashboard.getNumber("Shooter/PID/kA", 0);
             updatePIDConstants(kP, kI, kD, kS, kV, kA);
-        }).withName("apply");
+        }).withName("apply").ignoringDisable(true);
     }
 
 }

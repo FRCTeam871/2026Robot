@@ -27,7 +27,7 @@ import frc.robot.subsystems.swerveModule.SwerveModuleIOSparkFlex;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-    public static final boolean shouldReplay = true;
+    public static final boolean shouldReplay = false;
 
 //-------------------------------------------------------old
 public static final double SWERVE_STEER_KP = 2 / 360.0;

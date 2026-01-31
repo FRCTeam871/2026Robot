@@ -30,6 +30,12 @@ public class XboxControls implements IControls {
     public DoubleSupplier driveRotation() {
         return () -> Constants.deadbandAndExponential(-driveXboxController.getRightX())*.6;
     }
+
+    @Override
+    public DoubleSupplier runTurret() {
+        return () -> driveXboxController.getRightTriggerAxis();
+    }
+
     @Override
     public Trigger FIREEEEEEEEEEEEEEEEE() {
         return driveXboxController.x();
@@ -50,5 +56,17 @@ public class XboxControls implements IControls {
     @Override
     public Trigger fireHighPID() {
         return driveXboxController.povLeft();
+    }
+    @Override
+    public Trigger runFeeder() {
+        return driveXboxController.leftBumper();
+    }
+    @Override
+    public Trigger runIndexer() {
+       return driveXboxController.rightBumper();
+    }
+    @Override
+    public Trigger runIntake() {
+        return driveXboxController.a();
     }
 }

@@ -9,7 +9,7 @@ public class IndexerIOReal implements IndexerIO{
     private final SparkFlex indexMotor;
 
     public IndexerIOReal() {
-        this.indexMotor =  new SparkFlex(9, MotorType.kBrushless);
+        this.indexMotor =  new SparkFlex(14, MotorType.kBrushless);
     }
 
     @Override

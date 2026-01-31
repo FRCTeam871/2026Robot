@@ -11,6 +11,8 @@ public interface IControls {
     public DoubleSupplier sideToSideAxis();
     // positive is counterclockwise
     public DoubleSupplier driveRotation();
+
+    public DoubleSupplier runTurret();
     
     public Trigger FIREEEEEEEEEEEEEEEEE();
 
@@ -21,5 +23,11 @@ public interface IControls {
     public Trigger fireLowPID();
 
     public Trigger fireHighPID();
+
+    public Trigger runIndexer();
+
+    public Trigger runFeeder();
+
+    public Trigger runIntake();
 
 }

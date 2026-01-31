@@ -85,7 +85,7 @@ public class Shooter extends SubsystemBase {
     public void periodic() {
         io.updateInputs(inputs);
 
-        // Logger.recordOutput("RPM", inputs.velocity);
+        Logger.recordOutput("RPM", inputs.velocity);
     }
 
     public Command runMotorSpeed(double speed){
