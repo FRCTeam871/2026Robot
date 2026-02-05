@@ -26,7 +26,6 @@ public class Intake extends SubsystemBase {
     }   
     public Command sendIntakeOut() {
         return Commands.run(() -> io.setIntakeOut(true))
-                .finallyDo(canceled -> io.setIntakeOut(false))
-                .ignoringDisable(true);
+                .finallyDo(canceled -> io.setIntakeOut(false));
     }
 }

@@ -69,4 +69,9 @@ public class XboxControls implements IControls {
     public Trigger runIntake() {
         return driveXboxController.a();
     }
+
+    @Override
+    public Trigger runIntakePiston() {
+        return driveXboxController.y();
+    }
 }

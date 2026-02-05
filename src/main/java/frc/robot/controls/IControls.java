@@ -30,4 +30,5 @@ public interface IControls {
 
     public Trigger runIntake();
 
+    public Trigger runIntakePiston();
 }
