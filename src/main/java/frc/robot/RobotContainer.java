@@ -6,6 +6,7 @@ package frc.robot;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.function.BooleanSupplier;
 import java.util.stream.IntStream;
 
 import org.littletonrobotics.junction.LogFileUtil;
@@ -16,12 +17,13 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 
+import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.units.Units;
 import frc.robot.Constants.ModuleConstants;
 import frc.robot.controls.IControls;
 import frc.robot.controls.XboxControls;
@@ -47,6 +49,7 @@ import frc.robot.subsystems.swervedrive.SwerveDriveIORoll;
 import frc.robot.subsystems.turret.Turret;
 import frc.robot.subsystems.turret.TurretIO;
 import frc.robot.subsystems.turret.TurretIOReal;
+import frc.robot.subsystems.turret.TurretIOSim;
 
 public class RobotContainer {
     Shooter shooter;
@@ -65,10 +68,10 @@ public class RobotContainer {
         FeederIO feederIO = FeederIO.EMPTY;
         ShooterIO shooterIO = ShooterIO.EMPTY;
         IndexerIO indexerIO = IndexerIO.EMPTY;
-        TurretIO turretIO = TurretIO.EMPTY;
+        TurretIO turretIO = new TurretIOSim();
         IntakeIO intakeIO = IntakeIO.EMPTY;
-        // SwerveModuleIO[] moduleIOs = Collections.nCopies(4, SwerveModuleIO.EMPTY).toArray(SwerveModuleIO[]::new);
-        // SwerveDriveIO swerveDriveIO = SwerveDriveIO.EMPTY;
+        SwerveModuleIO[] moduleIOs = Collections.nCopies(4, SwerveModuleIO.EMPTY).toArray(SwerveModuleIO[]::new);
+        SwerveDriveIO swerveDriveIO = SwerveDriveIO.EMPTY;
         compressor = new Compressor(1, PneumaticsModuleType.CTREPCM);
         this.controls = new XboxControls();
         
@@ -84,35 +87,34 @@ public class RobotContainer {
             turretIO = new TurretIOReal();
             intakeIO = new IntakeIOReal();
             feederIO = new FeederIOReal();
-            // moduleIOs = Arrays.stream(
-            //         Constants.MODULE_CONSTANTS)
-            //         .map(Constants::getRealSwerveModuleIO)
-            //         .toArray(SwerveModuleIO[]::new);
-            // swerveDriveIO = new SwerveDriveIORoll(new AHRS(NavXComType.kMXP_SPI));
+            moduleIOs = Arrays.stream(
+                    Constants.MODULE_CONSTANTS)
+                    .map(Constants::getRealSwerveModuleIO)
+                    .toArray(SwerveModuleIO[]::new);
+            swerveDriveIO = new SwerveDriveIORoll(new AHRS(NavXComType.kMXP_SPI));
 
         }
-        // 0.0017509999452158809
-        // final SwerveModuleIO[] moduleIOsFinal = moduleIOs;
-        // final SwerveModule[] swerveModules = IntStream.range(0, moduleIOs.length)
-        //         .mapToObj(i -> {
-        //             final SwerveModuleIO io = moduleIOsFinal[i];
-        //             final ModuleConstants constants = Constants.MODULE_CONSTANTS[i];
-        //             return new SwerveModule(constants.leverArm(), io, constants.label());
-        //         })
-        //         .toArray(SwerveModule[]::new);
-        // swerveDrive = new SwerveDrive(swerveDriveIO,swerveModules);
+        final SwerveModuleIO[] moduleIOsFinal = moduleIOs;
+        final SwerveModule[] swerveModules = IntStream.range(0, moduleIOs.length)
+                .mapToObj(i -> {
+                    final SwerveModuleIO io = moduleIOsFinal[i];
+                    final ModuleConstants constants = Constants.MODULE_CONSTANTS[i];
+                    return new SwerveModule(constants.leverArm(), io, constants.label());
+                })
+                .toArray(SwerveModule[]::new);
+        swerveDrive = new SwerveDrive(swerveDriveIO,swerveModules);
 
         shooter = new Shooter(shooterIO);
         indexer = new Indexer(indexerIO);
         turret = new Turret(turretIO,swerveDrive);
         intake = new Intake(intakeIO);
         feeder = new Feeder(feederIO);
-        // aiming = new Aiming(turret, shooter, null, swerveDrive);
+        aiming = new Aiming(turret, shooter, null, swerveDrive);
         configureBindings();
     }
-    
+
     private void configureBindings() {
-        
+
         // controls.FIREEEEEEEEEEEEEEEEE().whileTrue(shooter.runMotorSpeed(.15));
         // controls.fiREEEE().whileTrue(shooter.runMotorSpeed(.3));
         controls.fireLowPID().whileTrue(shooter.holdMotorSetpoint(Units.RPM.of(1100)));

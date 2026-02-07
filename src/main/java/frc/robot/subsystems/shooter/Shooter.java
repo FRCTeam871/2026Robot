@@ -63,13 +63,17 @@ public class Shooter extends SubsystemBase {
 
     
     private AngularVelocity convertShootSpeedToRPM(LinearVelocity shootSpeed) {
-         AngularVelocity desiredRPM = null;
+         AngularVelocity desiredRPM = null; // TODO
          return desiredRPM;
     }
 
     public void setShooterSpeed(LinearVelocity speed){
         AngularVelocity RPM = convertShootSpeedToRPM(speed);
         io.setMotorSetpoint(RPM);
+    }
+
+    public LinearVelocity getShooterSpeed(){
+        return Units.MetersPerSecond.of(6.7);
     }
 
     private void motorLogSetter(SysIdRoutineLog log) {

@@ -15,10 +15,11 @@ public interface TurretIO {
     @AutoLog
     public class TurretIOInputs {
         Angle turretAngle = Units.Degrees.of(0);
+        Angle setpointAngle = Units.Degrees.of(0);
     }
 
     default void updateInputs(TurretIOInputs inputs) {
-            inputs.turretAngle = Units.Degrees.of(50);
     }
     default void runTurretMotor(double speed) {}
+    default void setTarget(Angle angle){}
 }

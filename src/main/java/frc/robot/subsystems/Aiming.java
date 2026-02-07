@@ -47,7 +47,7 @@ public class Aiming extends SubsystemBase {
             this.swerveDrive = swerveDrive;
         // TODO: flip for red
         hub = new Translation3d(Units.Inches.of(158.6 + (47.0 / 2.0)), Units.Inches.of(317.7 / 2.0),
-                Units.Feet.of(6.5));
+                Units.Feet.of(6));
 
         /* NOTE: ONLY FOR TESTING! YOU BETTER NOTICE THIS OR YOU'RE COOKED */
         if (Robot.isSimulation()) {             // =========================
@@ -66,10 +66,14 @@ public class Aiming extends SubsystemBase {
         return run(() -> {
             Logger.recordOutput("Aiming/RobotPose", swerveDrive.getEstimatedPose());
             Logger.recordOutput("Aiming/TurretPose", turret.currentTurretPose());
-            Logger.recordOutput("Aiming/FuelReleasePose", turret.currentPoseOfFuelRelease());
+            Logger.recordOutput("Aiming/CurrentFuelReleasePose", turret.currentPoseOfFuelRelease());
+            Logger.recordOutput("Aiming/TargetTurretPose", turret.targetTurretPose());
+            Logger.recordOutput("Aiming/TargetPoseOfFuelRelease", turret.targetPoseOfFuelRelease());
+
+
             
             Translation3d turretTranslation = turret.currentTurretPose().getTranslation();
-            turret.setYawSetpoint(calculateAngle(turretTranslation, hub));
+            turret.setYawSetpoint(calculateAngle(turretTranslation, hub).minus(swerveDrive.getEstimatedPose().getRotation().getMeasure()));
             boolean wantToShoot = false;/* Is It Time/Are we in the right zone? */
 
             Optional<LinearVelocity> desiredShootSpeed = calculateLaunchSpeed(turret.targetPoseOfFuelRelease(), hub);
@@ -79,6 +83,11 @@ public class Aiming extends SubsystemBase {
             boolean isTrajectoryInvalid = desiredShootSpeed.isEmpty()
                     || desiredShootSpeed.get().gt(Units.MetersPerSecond.of(10))
                     || desiredShootSpeed.get().lt(Units.MetersPerSecond.of(1));
+
+                makeFuelTrajectoryArray(
+                        shooter.getShooterSpeed(),
+                        turret.currentPoseOfFuelRelease(),
+                        true);
 
             if (isTrajectoryInvalid) {
                 Translation3d[] fuelTrajectory;
@@ -92,7 +101,10 @@ public class Aiming extends SubsystemBase {
             // TODO: also show current trajectory with target pose
             makeFuelTrajectoryArray(
                     desiredShootSpeed.get(),
-                    turret.targetPoseOfFuelRelease());
+                    turret.targetPoseOfFuelRelease(),
+                    false);
+
+
 
             if (!wantToShoot) {
                 shooter.runMotorSpeed(0);
@@ -105,7 +117,7 @@ public class Aiming extends SubsystemBase {
 
     public Angle calculateAngle(Translation3d start, Translation3d end) {
 
-        double yDisp = end.getY() - start.getY();
+        double yDisp = (end.getY() - start.getY());
         double xDisp = end.getX() - start.getX();
         Angle desiredYaw = Units.Radians.of(Math.atan2(yDisp, xDisp));
         return desiredYaw;
@@ -116,18 +128,18 @@ public class Aiming extends SubsystemBase {
         double xDisp = end.getX() - start.getX();
         Distance displacementH = Units.Meters.of(Math.sqrt((xDisp * xDisp) + (yDisp * yDisp)));
         Distance displacementV = end.getMeasureZ().minus(start.getMeasureZ());
-        Angle pitchAngle = start.getRotation().getMeasureY();
-        double billy = ((2 / Constants.GRAVITY.in(MetersPerSecondPerSecond)) *
+        Angle pitchAngle = start.getRotation().getMeasureY().unaryMinus();
+        double actuallydescriptive = ((2 / Constants.GRAVITY.in(MetersPerSecondPerSecond)) *
                 (displacementV.minus(displacementH.times(Math.tan(pitchAngle.in(Radians))))).in(Meters));
-        if (billy < 0) {
+        if (actuallydescriptive < 0) {
             return Optional.empty();
         }
         LinearVelocity velocityInitial = Units.MetersPerSecond.of(displacementH.in(Meters) /
-                (Math.cos(pitchAngle.in(Radians)) * Math.sqrt(billy)));
+                (Math.cos(pitchAngle.in(Radians)) * Math.sqrt(actuallydescriptive)));
         return Optional.of(velocityInitial);
     }
 
-    public void makeFuelTrajectoryArray(LinearVelocity desiredShootSpeed, Pose3d initialPose) {
+    public void makeFuelTrajectoryArray(LinearVelocity desiredShootSpeed, Pose3d initialPose, boolean CurrentTrajectory) {
         List<Translation3d> fuelPositions = new ArrayList<>();
         Distance ground = Units.Inches.of(0);
         Translation3d fuelPosition = initialPose.getTranslation();
@@ -138,13 +150,16 @@ public class Aiming extends SubsystemBase {
             //
         }
         Translation3d[] fuelTrajectory = fuelPositions.toArray(size -> new Translation3d[size]);
-        Logger.recordOutput("Aiming/TrajectoryPath", fuelTrajectory);
-        Logger.recordOutput("Aiming/InitialPose", initialPose);
+        if(CurrentTrajectory){
+            Logger.recordOutput("Aiming/TrajectoryPathCurrent", fuelTrajectory);
+        } else{
+            Logger.recordOutput("Aiming/TrajectoryPath", fuelTrajectory);
+        }
     }
 
     public Translation3d findBallPosition(Time time, Pose3d initialPose, LinearVelocity launchSpeed) {
 
-        double angle = initialPose.getRotation().getY(); // launch angle
+        double angle = -initialPose.getRotation().getY(); // launch angle
         LinearVelocity initialVelocityY = launchSpeed.times(Math.sin(angle));
         LinearVelocity initialVelocityX = launchSpeed.times(Math.cos(angle));
         Distance displacementX = initialVelocityX.times(time);

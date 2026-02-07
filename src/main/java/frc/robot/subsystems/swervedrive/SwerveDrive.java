@@ -9,7 +9,9 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -18,7 +20,9 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
+import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -227,7 +231,10 @@ public class SwerveDrive extends SubsystemBase {
 
     @AutoLogOutput(key = "Drive/EstimatedPose")
     public Pose2d getEstimatedPose() {
-        return poseEstimator.getEstimatedPosition();
+        // return poseEstimator.getEstimatedPosition();
+        Pose2d DUMMY = new Pose2d(5*Math.cos(Timer.getFPGATimestamp()),5*Math.sin(Timer.getFPGATimestamp()), new Rotation2d(Units.Degrees.of(
+            40))); 
+        return DUMMY;
     }
 
     public double getYawRate() {
