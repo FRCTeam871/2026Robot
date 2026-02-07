@@ -32,5 +32,8 @@ public class Feeder extends SubsystemBase {
     public void setYawSetpoint(Angle angle){
         // turretAngle.set(angle);
     }
+    public void runDumbFeederMotor(double speed){
+        io.runFeederMotor(speed);
+    }
 }   
 

@@ -51,8 +51,8 @@ public class Aiming extends SubsystemBase {
 
         /* NOTE: ONLY FOR TESTING! YOU BETTER NOTICE THIS OR YOU'RE COOKED */
         if (Robot.isSimulation()) {             // =========================
-            setDefaultCommand(aim());
-        }
+            setDefaultCommand(aim());           // =========================
+        }                                       // =========================
         /* NOTE: ONLY FOR TESTING! YOU BETTER NOTICE THIS OR YOU'RE COOKED */
     }
 

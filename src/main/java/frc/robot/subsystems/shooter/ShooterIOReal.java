@@ -72,6 +72,7 @@ public class ShooterIOReal implements ShooterIO {
         inputs.velocity = Units.RPM.of(m_shooterEncoder.getVelocity());
         inputs.motorVoltage = Units.Volts.of(shooterMotor.getAppliedOutput()*shooterMotor.getBusVoltage());
         inputs.position = Units.Rotations.of(m_shooterEncoder.getPosition());
+        inputs.isAtRPMSetpoint = m_shooterMotorController.isAtSetpoint();
     }
 
     @Override
@@ -86,6 +87,7 @@ public class ShooterIOReal implements ShooterIO {
     @Override
     public void setVoltage(Voltage v) {
         shooterMotor.setVoltage(v);
+
     }
     
     public Command applyPIDConstants(){

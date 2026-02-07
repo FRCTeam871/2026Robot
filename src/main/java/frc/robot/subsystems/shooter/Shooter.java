@@ -6,6 +6,8 @@ import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.Volts;
 
+import java.util.function.BooleanSupplier;
+
 import org.littletonrobotics.junction.Logger;
 
 import com.revrobotics.PersistMode;
@@ -109,6 +111,10 @@ public class Shooter extends SubsystemBase {
             io.runMotorSpeed(0);
              Logger.recordOutput("rpmSetpoint", 0);
         });
+    }
+
+    public boolean isAtGoalRPM() {
+        return inputs.isAtRPMSetpoint;
     }
 
     public Command quasiStatic(Direction direction){

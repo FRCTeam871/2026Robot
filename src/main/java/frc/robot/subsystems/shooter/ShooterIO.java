@@ -23,6 +23,7 @@ public interface ShooterIO {
         AngularVelocity velocity = Units.RotationsPerSecond.of(0);
         Voltage motorVoltage = Units.Volts.of(0);
         Angle position = Units.Rotations.of(0);
+        boolean isAtRPMSetpoint = false;
     }
 
     default void updateInputs(ShooterIOInputs inputs) {}
