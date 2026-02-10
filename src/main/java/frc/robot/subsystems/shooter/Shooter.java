@@ -1,5 +1,6 @@
 package frc.robot.subsystems.shooter;
 
+import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
@@ -22,6 +23,7 @@ import com.revrobotics.spark.config.SparkFlexConfig;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.units.Unit;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.LinearVelocity;
@@ -34,6 +36,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.robot.Constants;
 import frc.robot.subsystems.shooter.ShooterIOInputsAutoLogged;
 import frc.robot.subsystems.shooter.ShooterIO.ShooterIOInputs;
 
@@ -64,8 +67,10 @@ public class Shooter extends SubsystemBase {
     }
 
     
-    private AngularVelocity convertShootSpeedToRPM(LinearVelocity shootSpeed) {
-         AngularVelocity desiredRPM = null; // TODO
+    public AngularVelocity convertShootSpeedToRPM(LinearVelocity shootSpeed) {
+         AngularVelocity desiredRPM = Units.RPM.of((shootSpeed.div(Constants.SPEEDTRANSFERPERCENT)).div(Constants.SHOOTERWHEELRADIUS).baseUnitMagnitude()); // TODO
+         System.out.println(desiredRPM.in(RPM));
+         System.out.println(shootSpeed.in(MetersPerSecond));
          return desiredRPM;
     }
 

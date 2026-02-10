@@ -8,7 +8,9 @@ import com.ctre.phoenix6.signals.SensorDirectionValue;
 
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.units.Unit;
 import edu.wpi.first.units.Units;
+import edu.wpi.first.units.measure.Dimensionless;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearAcceleration;
 import edu.wpi.first.units.measure.Time;
@@ -30,6 +32,8 @@ import frc.robot.subsystems.swerveModule.SwerveModuleIOSparkFlex;
 public final class Constants {
     public static final boolean shouldReplay = false;
     public static final LinearAcceleration GRAVITY = Units.MetersPerSecondPerSecond.of(-9.81); 
+    public static final Dimensionless SPEEDTRANSFERPERCENT = Units.Percent.of(3.86); /* Change Later update experimentally */
+    public static final Distance SHOOTERWHEELRADIUS = Units.Inches.of(2); 
 //-------------------------------------------------------old
 public static final double SWERVE_STEER_KP = 2 / 360.0;
     public static final double SWERVE_STEER_KI = 0.000;
