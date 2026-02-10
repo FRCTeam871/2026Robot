@@ -1,5 +1,8 @@
 package frc.robot.subsystems;
 
+import java.util.Optional;
+import java.util.function.Supplier;
+
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
@@ -22,13 +25,14 @@ public class Sequencing extends SubsystemBase {
         this.intake = intake;
         this.feeder = feeder;
     }
-    public Command shooterCommand(AngularVelocity rpmSetpoint) {
+    public Command shooterCommand(Supplier<AngularVelocity> rpmSetpoint) {
 
         // alongWith runs 2 commands at once
         return shooter.holdMotorSetpoint(rpmSetpoint)
             .alongWith(
-                new ConditionalCommand(feeder.runFeederMotor(1), feeder.runFeederMotor(0), () -> shooter.isAtGoalRPM())); // <- This lambda converts the command into a BooleanSupplier function
-
+                new ConditionalCommand(feeder.runFeederMotor(.25), feeder.runFeederMotor(0), () -> shooter.isAtGoalRPM())).alongWith(
+                new ConditionalCommand(indexer.runIndexMotor( .2), indexer.runIndexMotor(0), ()-> shooter.isAtGoalRPM())); // <- This lambda converts the command into a BooleanSupplier function
+                
         // return run(() -> {
         //     shooter.holdMotorSetpoint(rpmSetpoint);
         //     if (shooter.isAtGoalRPM()) {

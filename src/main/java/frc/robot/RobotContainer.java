@@ -9,6 +9,8 @@ import java.util.Collections;
 import java.util.function.BooleanSupplier;
 import java.util.stream.IntStream;
 
+import javax.sound.midi.Sequence;
+
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
@@ -28,6 +30,7 @@ import frc.robot.Constants.ModuleConstants;
 import frc.robot.controls.IControls;
 import frc.robot.controls.XboxControls;
 import frc.robot.subsystems.Aiming;
+import frc.robot.subsystems.Sequencing;
 import frc.robot.subsystems.feeder.Feeder;
 import frc.robot.subsystems.feeder.FeederIO;
 import frc.robot.subsystems.feeder.FeederIOReal;
@@ -59,6 +62,7 @@ public class RobotContainer {
     Feeder feeder;
     Compressor compressor;
     Aiming aiming;
+    Sequencing sequencing;
     FieldTracking fieldTracking;
     SwerveDrive swerveDrive;
     final IControls controls;
@@ -70,9 +74,9 @@ public class RobotContainer {
         IndexerIO indexerIO = IndexerIO.EMPTY;
         TurretIO turretIO = new TurretIOSim();
         IntakeIO intakeIO = IntakeIO.EMPTY;
-        // SwerveModuleIO[] moduleIOs = Collections.nCopies(4, SwerveModuleIO.EMPTY).toArray(SwerveModuleIO[]::new);
-        // SwerveDriveIO swerveDriveIO = SwerveDriveIO.EMPTY;
-        // compressor = new Compressor(1, PneumaticsModuleType.CTREPCM);
+        SwerveModuleIO[] moduleIOs = Collections.nCopies(4, SwerveModuleIO.EMPTY).toArray(SwerveModuleIO[]::new);
+        SwerveDriveIO swerveDriveIO = SwerveDriveIO.EMPTY;
+        compressor = new Compressor(1, PneumaticsModuleType.CTREPCM);
         this.controls = new XboxControls();
         
         if (RobotBase.isSimulation() && Constants.shouldReplay) { // is the world a simulation?
@@ -87,29 +91,30 @@ public class RobotContainer {
             turretIO = new TurretIOReal();
             intakeIO = new IntakeIOReal();
             feederIO = new FeederIOReal();
-            // moduleIOs = Arrays.stream(
-            //         Constants.MODULE_CONSTANTS)
-            //         .map(Constants::getRealSwerveModuleIO)
-            //         .toArray(SwerveModuleIO[]::new);
-            // swerveDriveIO = new SwerveDriveIORoll(new AHRS(NavXComType.kMXP_SPI));
+            moduleIOs = Arrays.stream(
+                    Constants.MODULE_CONSTANTS)
+                    .map(Constants::getRealSwerveModuleIO)
+                    .toArray(SwerveModuleIO[]::new);
+            swerveDriveIO = new SwerveDriveIORoll(new AHRS(NavXComType.kMXP_SPI));
 
         }
-        // final SwerveModuleIO[] moduleIOsFinal = moduleIOs;
-        // final SwerveModule[] swerveModules = IntStream.range(0, moduleIOs.length)
-        //         .mapToObj(i -> {
-        //             final SwerveModuleIO io = moduleIOsFinal[i];
-        //             final ModuleConstants constants = Constants.MODULE_CONSTANTS[i];
-        //             return new SwerveModule(constants.leverArm(), io, constants.label());
-        //         })
-        //         .toArray(SwerveModule[]::new);
-        // swerveDrive = new SwerveDrive(swerveDriveIO,swerveModules);
+        final SwerveModuleIO[] moduleIOsFinal = moduleIOs;
+        final SwerveModule[] swerveModules = IntStream.range(0, moduleIOs.length)
+                .mapToObj(i -> {
+                    final SwerveModuleIO io = moduleIOsFinal[i];
+                    final ModuleConstants constants = Constants.MODULE_CONSTANTS[i];
+                    return new SwerveModule(constants.leverArm(), io, constants.label());
+                })
+                .toArray(SwerveModule[]::new);
+        swerveDrive = new SwerveDrive(swerveDriveIO,swerveModules);
 
         shooter = new Shooter(shooterIO);
         indexer = new Indexer(indexerIO);
         turret = new Turret(turretIO,swerveDrive);
         intake = new Intake(intakeIO);
         feeder = new Feeder(feederIO);
-        // aiming = new Aiming(turret, shooter, null, swerveDrive);
+        sequencing = new Sequencing(shooter, intake, indexer, feeder);
+        aiming = new Aiming(turret, shooter, null, swerveDrive, sequencing);
         configureBindings();
     }
 
@@ -126,10 +131,12 @@ public class RobotContainer {
 
         controls.runFeeder().whileTrue(feeder.runFeederMotor(-.5));
 
-        controls.runIndexer().whileTrue(indexer.runIndexMotor(() -> .4));
+        controls.runIndexer().whileTrue(indexer.runIndexMotor( .4));
 
         controls.runIntake().whileTrue(intake.runIntakeMotor(() -> -.5));
         controls.runIntakePiston().toggleOnTrue(intake.sendIntakeOut());
+
+        controls.runSequence().whileTrue(sequencing.shooterCommand(()->Units.RPM.of(5600)));
 
         turret.setDefaultCommand(turret.runTurretMotor(controls.runTurret()));
         controls.compressorToggle().onTrue(Commands.runOnce(() -> {

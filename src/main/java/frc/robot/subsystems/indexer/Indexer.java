@@ -21,9 +21,9 @@ public class Indexer extends SubsystemBase {
         io.updateInputs(inputs);
     } 
 
-    public Command runIndexMotor(DoubleSupplier speed){
+    public Command runIndexMotor(double speed){
         return run(()-> {
-            io.runIndexMotor(speed.getAsDouble());
+            io.runIndexMotor(speed);
         }).finallyDo(()->{
             io.runIndexMotor(0);
         });

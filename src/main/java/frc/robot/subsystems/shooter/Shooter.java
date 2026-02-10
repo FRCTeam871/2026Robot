@@ -8,6 +8,7 @@ import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.Volts;
 
 import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
 
@@ -117,6 +118,19 @@ public class Shooter extends SubsystemBase {
              Logger.recordOutput("rpmSetpoint", 0);
         });
     }
+
+      public Command holdMotorSetpoint(Supplier<AngularVelocity> rpmSetpoint){
+        return run(()-> {
+            AngularVelocity rpmSet = rpmSetpoint.get();
+            Logger.recordOutput("rpmSetpoint", rpmSet);
+            io.setMotorSetpoint(rpmSet);
+
+        }).finallyDo(() -> {
+            io.runMotorSpeed(0);
+             Logger.recordOutput("rpmSetpoint", 0);
+        });
+    }
+
 
     public boolean isAtGoalRPM() {
         return inputs.isAtRPMSetpoint;

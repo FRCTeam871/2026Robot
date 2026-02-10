@@ -23,7 +23,7 @@ public class Feeder extends SubsystemBase {
     
 
     public Command runFeederMotor(double speed){
-        return run(()-> {
+        return runOnce(()-> {
             io.runFeederMotor(speed);
         }).finallyDo(()->{
             io.runFeederMotor(0);

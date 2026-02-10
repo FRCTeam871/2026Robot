@@ -7,6 +7,7 @@ import static edu.wpi.first.units.Units.Radians;
 
 import java.lang.StackWalker.Option;
 import java.util.ArrayList;
+import java.util.EmptyStackException;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,6 +26,9 @@ import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Robot;
@@ -39,19 +43,22 @@ public class Aiming extends SubsystemBase {
     FieldTracking fieldtracking;
     Translation3d hub;
     SwerveDrive swerveDrive;
+    Sequencing sequencing;
+    Optional<LinearVelocity> desiredShootSpeed = Optional.empty();
     
-        public Aiming(Turret turret, Shooter shooter, FieldTracking fieldtracking, SwerveDrive swerveDrive) {
+        public Aiming(Turret turret, Shooter shooter, FieldTracking fieldtracking, SwerveDrive swerveDrive, Sequencing sequencing) {
             this.turret = turret;
             this.shooter = shooter;
             this.fieldtracking = fieldtracking;
             this.swerveDrive = swerveDrive;
+            this.sequencing = sequencing;
         // TODO: flip for red
         hub = new Translation3d(Units.Inches.of(158.6 + (47.0 / 2.0)), Units.Inches.of(317.7 / 2.0),
                 Units.Feet.of(6));
 
         /* NOTE: ONLY FOR TESTING! YOU BETTER NOTICE THIS OR YOU'RE COOKED */
         if (Robot.isSimulation()) {             // =========================
-            setDefaultCommand(aim());           // =========================
+            setDefaultCommand(findSpeed().alongWith(fire()));     // =========================
         }                                       // =========================
         /* NOTE: ONLY FOR TESTING! YOU BETTER NOTICE THIS OR YOU'RE COOKED */
     }
@@ -62,7 +69,7 @@ public class Aiming extends SubsystemBase {
 
     }
 
-    public Command aim() {
+    public Command findSpeed() {
         return run(() -> {
             Logger.recordOutput("Aiming/RobotPose", swerveDrive.getEstimatedPose());
             Logger.recordOutput("Aiming/TurretPose", turret.currentTurretPose());
@@ -76,7 +83,7 @@ public class Aiming extends SubsystemBase {
             turret.setYawSetpoint(calculateAngle(turretTranslation, hub).minus(swerveDrive.getEstimatedPose().getRotation().getMeasure()));
             boolean wantToShoot = false;/* Is It Time/Are we in the right zone? */
 
-            Optional<LinearVelocity> desiredShootSpeed = calculateLaunchSpeed(turret.targetPoseOfFuelRelease(), hub);
+            desiredShootSpeed = calculateLaunchSpeed(turret.targetPoseOfFuelRelease(), hub);
 
             Logger.recordOutput("Aiming/desiredShootSpeed", desiredShootSpeed.orElse(Units.MetersPerSecond.of(0)));
 
@@ -94,7 +101,8 @@ public class Aiming extends SubsystemBase {
                 fuelTrajectory = new Translation3d[0];
                 Logger.recordOutput("Aiming/TrajectoryPath", fuelTrajectory);
                 Logger.recordOutput("Aiming/InitialPose", turret.targetPoseOfFuelRelease());
-                shooter.runMotorSpeed(0);
+                desiredShootSpeed = Optional.empty();
+
                 return;
             }
 
@@ -103,16 +111,21 @@ public class Aiming extends SubsystemBase {
                     desiredShootSpeed.get(),
                     turret.targetPoseOfFuelRelease(),
                     false);
-
-
-
-            if (!wantToShoot) {
-                shooter.runMotorSpeed(0);
-                return;
-            }
-            // TODO: make indexer and feeder run whilist the shooter motor runs
-            shooter.setShooterSpeed(desiredShootSpeed.get());
-        });
+                    
+                    
+                    if (!wantToShoot) {
+                        desiredShootSpeed = Optional.empty();
+                        return;
+                    }
+                    
+                    // TODO: make indexer and feeder run whilist the shooter motor runs
+                });
+    }
+    public Command fire(){
+           return new ConditionalCommand(
+            sequencing.shooterCommand(()-> shooter.convertShootSpeedToRPM(desiredShootSpeed.get())),
+            Commands.none(),
+            ()-> desiredShootSpeed.isPresent());
     }
 
     public Angle calculateAngle(Translation3d start, Translation3d end) {
