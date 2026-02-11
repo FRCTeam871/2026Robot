@@ -233,7 +233,7 @@ public class SwerveDrive extends SubsystemBase {
     public Pose2d getEstimatedPose() {
         // return poseEstimator.getEstimatedPosition();
         Pose2d DUMMY = new Pose2d(5*Math.cos(Timer.getFPGATimestamp()),5*Math.sin(Timer.getFPGATimestamp()), new Rotation2d(Units.Degrees.of(
-            40))); 
+            40)));
         return DUMMY;
     }
 

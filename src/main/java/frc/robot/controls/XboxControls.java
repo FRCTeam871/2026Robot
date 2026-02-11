@@ -79,4 +79,9 @@ public class XboxControls implements IControls {
     public Trigger runSequence() {
         return driveXboxController.b();
     }
+
+    @Override
+    public Trigger toggleAutoShoot() {
+        return driveXboxController.povUp();
+    }
 }

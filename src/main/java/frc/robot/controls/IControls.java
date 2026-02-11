@@ -33,4 +33,6 @@ public interface IControls {
     public Trigger runIntakePiston();
 
     public Trigger runSequence();
+
+    public Trigger toggleAutoShoot();
 }

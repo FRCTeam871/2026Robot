@@ -14,9 +14,11 @@ import java.util.Optional;
 import org.littletonrobotics.junction.Logger;
 
 import com.fasterxml.jackson.databind.introspect.TypeResolutionContext.Empty;
+import com.pathplanner.lib.util.FlippingUtil;
 
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
@@ -24,7 +26,9 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearAcceleration;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Time;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -45,27 +49,32 @@ public class Aiming extends SubsystemBase {
     SwerveDrive swerveDrive;
     Sequencing sequencing;
     Optional<LinearVelocity> desiredShootSpeed = Optional.empty();
-    
-        public Aiming(Turret turret, Shooter shooter, FieldTracking fieldtracking, SwerveDrive swerveDrive, Sequencing sequencing) {
-            this.turret = turret;
-            this.shooter = shooter;
-            this.fieldtracking = fieldtracking;
-            this.swerveDrive = swerveDrive;
-            this.sequencing = sequencing;
-        // TODO: flip for red
+    boolean wantToShoot;
+
+    public Aiming(Turret turret, Shooter shooter, FieldTracking fieldtracking, SwerveDrive swerveDrive,
+            Sequencing sequencing) {
+        this.turret = turret;
+        this.shooter = shooter;
+        this.fieldtracking = fieldtracking;
+        this.swerveDrive = swerveDrive;
+        this.sequencing = sequencing;
+        wantToShoot = false;
+
         hub = new Translation3d(Units.Inches.of(158.6 + (47.0 / 2.0)), Units.Inches.of(317.7 / 2.0),
                 Units.Feet.of(6));
-
+        if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red) {
+            Translation2d flipped = FlippingUtil.flipFieldPosition(hub.toTranslation2d());
+            hub = new Translation3d(flipped.getX(), flipped.getY(), hub.getZ());
+        }
         /* NOTE: ONLY FOR TESTING! YOU BETTER NOTICE THIS OR YOU'RE COOKED */
-        if (Robot.isSimulation()) {             // =========================
-            setDefaultCommand(findSpeed().alongWith(fire()));     // =========================
-        }                                       // =========================
+        if (Robot.isSimulation()) { // =========================
+            setDefaultCommand(findSpeed().alongWith(fire())); // =========================
+        } // =========================
         /* NOTE: ONLY FOR TESTING! YOU BETTER NOTICE THIS OR YOU'RE COOKED */
     }
 
     @Override
     public void periodic() {
-        Translation3d turretTranslation;
 
     }
 
@@ -77,11 +86,9 @@ public class Aiming extends SubsystemBase {
             Logger.recordOutput("Aiming/TargetTurretPose", turret.targetTurretPose());
             Logger.recordOutput("Aiming/TargetPoseOfFuelRelease", turret.targetPoseOfFuelRelease());
 
-
-            
             Translation3d turretTranslation = turret.currentTurretPose().getTranslation();
-            turret.setYawSetpoint(calculateAngle(turretTranslation, hub).minus(swerveDrive.getEstimatedPose().getRotation().getMeasure()));
-            boolean wantToShoot = false;/* Is It Time/Are we in the right zone? */
+            turret.setYawSetpoint(calculateAngle(turretTranslation, hub)
+                    .minus(swerveDrive.getEstimatedPose().getRotation().getMeasure()));
 
             desiredShootSpeed = calculateLaunchSpeed(turret.targetPoseOfFuelRelease(), hub);
 
@@ -91,10 +98,10 @@ public class Aiming extends SubsystemBase {
                     || desiredShootSpeed.get().gt(Units.MetersPerSecond.of(10))
                     || desiredShootSpeed.get().lt(Units.MetersPerSecond.of(1));
 
-                makeFuelTrajectoryArray(
-                        shooter.getShooterSpeed(),
-                        turret.currentPoseOfFuelRelease(),
-                        true);
+            makeFuelTrajectoryArray(
+                    shooter.getShooterSpeed(),
+                    turret.currentPoseOfFuelRelease(),
+                    true);
 
             if (isTrajectoryInvalid) {
                 Translation3d[] fuelTrajectory;
@@ -106,26 +113,32 @@ public class Aiming extends SubsystemBase {
                 return;
             }
 
-            // TODO: also show current trajectory with target pose
             makeFuelTrajectoryArray(
                     desiredShootSpeed.get(),
                     turret.targetPoseOfFuelRelease(),
                     false);
-                    
-                    
-                    if (!wantToShoot) {
-                        desiredShootSpeed = Optional.empty();
-                        return;
-                    }
-                    
-                    // TODO: make indexer and feeder run whilist the shooter motor runs
-                });
+
+            if (!wantToShoot) {
+                desiredShootSpeed = Optional.empty();
+                return;
+            }
+
+        });
     }
-    public Command fire(){
-           return new ConditionalCommand(
-            sequencing.shooterCommand(()-> shooter.convertShootSpeedToRPM(desiredShootSpeed.get())),
-            Commands.none(),
-            ()-> desiredShootSpeed.isPresent());
+
+    public Command fire() {
+        return new ConditionalCommand(
+                sequencing.shooterCommand(() -> shooter.convertShootSpeedToRPM(desiredShootSpeed.get())),
+                Commands.none(),
+                () -> desiredShootSpeed.isPresent());
+    }
+
+    public Command shootTrue() {
+        return run(()-> {
+            wantToShoot = true;
+        }).finallyDo(()->{
+            wantToShoot = false;
+        });
     }
 
     public Angle calculateAngle(Translation3d start, Translation3d end) {
@@ -152,7 +165,8 @@ public class Aiming extends SubsystemBase {
         return Optional.of(velocityInitial);
     }
 
-    public void makeFuelTrajectoryArray(LinearVelocity desiredShootSpeed, Pose3d initialPose, boolean CurrentTrajectory) {
+    public void makeFuelTrajectoryArray(LinearVelocity desiredShootSpeed, Pose3d initialPose,
+            boolean CurrentTrajectory) {
         List<Translation3d> fuelPositions = new ArrayList<>();
         Distance ground = Units.Inches.of(0);
         Translation3d fuelPosition = initialPose.getTranslation();
@@ -163,9 +177,9 @@ public class Aiming extends SubsystemBase {
             //
         }
         Translation3d[] fuelTrajectory = fuelPositions.toArray(size -> new Translation3d[size]);
-        if(CurrentTrajectory){
+        if (CurrentTrajectory) {
             Logger.recordOutput("Aiming/TrajectoryPathCurrent", fuelTrajectory);
-        } else{
+        } else {
             Logger.recordOutput("Aiming/TrajectoryPath", fuelTrajectory);
         }
     }

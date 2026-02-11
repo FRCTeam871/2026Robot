@@ -23,11 +23,6 @@ public class TurretIOSim implements TurretIO{
         inputs.setpointAngle = targetAngle;
     }
 
-
-    @Override
-    public void runTurretMotor(final double speed) {
-    }
-
     @Override
     public void setTarget(Angle angle) {
         targetAngle = angle;

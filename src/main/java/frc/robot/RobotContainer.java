@@ -35,6 +35,8 @@ import frc.robot.subsystems.feeder.Feeder;
 import frc.robot.subsystems.feeder.FeederIO;
 import frc.robot.subsystems.feeder.FeederIOReal;
 import frc.robot.subsystems.fieldtracking.FieldTracking;
+import frc.robot.subsystems.fieldtracking.FieldTrackingIO;
+import frc.robot.subsystems.fieldtracking.FieldTrackingIOLimeLight;
 import frc.robot.subsystems.indexer.Indexer;
 import frc.robot.subsystems.indexer.IndexerIO;
 import frc.robot.subsystems.indexer.IndexerIOReal;
@@ -55,20 +57,21 @@ import frc.robot.subsystems.turret.TurretIOReal;
 import frc.robot.subsystems.turret.TurretIOSim;
 
 public class RobotContainer {
-    Shooter shooter;
-    Indexer indexer;
-    Turret turret;
-    Intake intake;
-    Feeder feeder;
-    Compressor compressor;
-    Aiming aiming;
-    Sequencing sequencing;
-    FieldTracking fieldTracking;
-    SwerveDrive swerveDrive;
+    final Shooter shooter;
+    final Indexer indexer;
+    final Turret turret;
+    final Intake intake;
+    final Feeder feeder;
+    final Compressor compressor;
+    final Aiming aiming;
+    final Sequencing sequencing;
+    final FieldTracking fieldTracking;
+    final SwerveDrive swerveDrive;
     final IControls controls;
 
     public RobotContainer() {
-
+ 
+        FieldTrackingIO fieldTrackingIO = FieldTrackingIO.EMPTY;
         FeederIO feederIO = FeederIO.EMPTY;
         ShooterIO shooterIO = ShooterIO.EMPTY;
         IndexerIO indexerIO = IndexerIO.EMPTY;
@@ -86,16 +89,17 @@ public class RobotContainer {
         }
         
         if (RobotBase.isReal()) { // is it real?
+            fieldTrackingIO = new FieldTrackingIOLimeLight(); 
             shooterIO = new ShooterIOReal();
             indexerIO = new IndexerIOReal();
-            turretIO = new TurretIOReal();
+            // turretIO = new TurretIOReal();
             intakeIO = new IntakeIOReal();
             feederIO = new FeederIOReal();
-            moduleIOs = Arrays.stream(
-                    Constants.MODULE_CONSTANTS)
-                    .map(Constants::getRealSwerveModuleIO)
-                    .toArray(SwerveModuleIO[]::new);
-            swerveDriveIO = new SwerveDriveIORoll(new AHRS(NavXComType.kMXP_SPI));
+            // moduleIOs = Arrays.stream(
+            //         Constants.MODULE_CONSTANTS)
+            //         .map(Constants::getRealSwerveModuleIO)
+            //         .toArray(SwerveModuleIO[]::new);
+            // swerveDriveIO = new SwerveDriveIORoll(new AHRS(NavXComType.kMXP_SPI));
 
         }
         final SwerveModuleIO[] moduleIOsFinal = moduleIOs;
@@ -114,7 +118,8 @@ public class RobotContainer {
         intake = new Intake(intakeIO);
         feeder = new Feeder(feederIO);
         sequencing = new Sequencing(shooter, intake, indexer, feeder);
-        aiming = new Aiming(turret, shooter, null, swerveDrive, sequencing);
+        fieldTracking = new FieldTracking(swerveDrive, fieldTrackingIO);
+        aiming = new Aiming(turret, shooter, fieldTracking, swerveDrive, sequencing);
         configureBindings();
     }
 
@@ -136,9 +141,10 @@ public class RobotContainer {
         controls.runIntake().whileTrue(intake.runIntakeMotor(() -> -.5));
         controls.runIntakePiston().toggleOnTrue(intake.sendIntakeOut());
 
-        controls.runSequence().whileTrue(sequencing.shooterCommand(()->Units.RPM.of(5600)));
+        controls.runSequence().whileTrue(sequencing.shooterCommand(()->Units.RPM.of(2000)));
 
-        turret.setDefaultCommand(turret.runTurretMotor(controls.runTurret()));
+        controls.toggleAutoShoot().whileTrue(aiming.shootTrue());
+
         controls.compressorToggle().onTrue(Commands.runOnce(() -> {
             if (compressor.isEnabled()) {
                 compressor.disable();
@@ -147,6 +153,7 @@ public class RobotContainer {
             }
         }));
     }
+
 
     public Command getAutonomousCommand() {
         return Commands.print("No autonomous command configured");

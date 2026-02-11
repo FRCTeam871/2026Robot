@@ -20,6 +20,5 @@ public interface TurretIO {
 
     default void updateInputs(TurretIOInputs inputs) {
     }
-    default void runTurretMotor(double speed) {}
     default void setTarget(Angle angle){}
 }

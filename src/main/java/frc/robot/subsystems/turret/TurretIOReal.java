@@ -79,12 +79,6 @@ public class TurretIOReal implements TurretIO{
         inputs.turretAngle = Units.Rotation.of(m_Turret_Encoder.getPosition());
     }
 
-
-    @Override
-    public void runTurretMotor(final double speed) {
-        turretMotor.set(speed);
-    }
-
     @Override
     public void setTarget(Angle angle) {
         m_TurretMotorController.setSetpoint(angle.in(Rotations), ControlType.kPosition, ClosedLoopSlot.kSlot1);

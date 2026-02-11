@@ -60,15 +60,7 @@ public class Turret extends SubsystemBase {
         Transform3d turretPoseRelative = new Transform3d(Units.Inches.of(-11), Units.Inches.of(0), Units.Inches.of(20),
                 new Rotation3d(Units.Degrees.of(0), Units.Degrees.of(0), inputs.setpointAngle));
         return currentRobotPose.plus(turretPoseRelative);
-    }
-
-    public Command runTurretMotor(DoubleSupplier speed) {
-        return run(() -> {
-            io.runTurretMotor(speed.getAsDouble());
-        }).finallyDo(() -> {
-            io.runTurretMotor(0);
-        });
-    }
+    }  
 
     public void setYawSetpoint(Angle angle) {
         io.setTarget(angle);
