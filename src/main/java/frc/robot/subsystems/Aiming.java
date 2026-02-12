@@ -126,7 +126,7 @@ public class Aiming extends SubsystemBase {
         });
     }
 
-    public Command fire() {
+    private Command fire() {
         return new ConditionalCommand(
                 sequencing.shooterCommand(() -> shooter.convertShootSpeedToRPM(desiredShootSpeed.get())),
                 Commands.none(),

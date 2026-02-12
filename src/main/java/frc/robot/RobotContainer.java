@@ -36,6 +36,7 @@ import frc.robot.subsystems.feeder.FeederIO;
 import frc.robot.subsystems.feeder.FeederIOReal;
 import frc.robot.subsystems.fieldtracking.FieldTracking;
 import frc.robot.subsystems.fieldtracking.FieldTrackingIO;
+import frc.robot.subsystems.fieldtracking.FieldTrackingIO.IMUMode;
 import frc.robot.subsystems.fieldtracking.FieldTrackingIOLimeLight;
 import frc.robot.subsystems.indexer.Indexer;
 import frc.robot.subsystems.indexer.IndexerIO;
@@ -68,6 +69,7 @@ public class RobotContainer {
     final FieldTracking fieldTracking;
     final SwerveDrive swerveDrive;
     final IControls controls;
+    final AutonomousPlanner autonomousPlanner;
 
     public RobotContainer() {
  
@@ -120,6 +122,7 @@ public class RobotContainer {
         sequencing = new Sequencing(shooter, intake, indexer, feeder);
         fieldTracking = new FieldTracking(swerveDrive, fieldTrackingIO);
         aiming = new Aiming(turret, shooter, fieldTracking, swerveDrive, sequencing);
+        autonomousPlanner = new AutonomousPlanner(intake, swerveDrive, fieldTracking, aiming);
         configureBindings();
     }
 
@@ -127,16 +130,16 @@ public class RobotContainer {
 
         // controls.FIREEEEEEEEEEEEEEEEE().whileTrue(shooter.runMotorSpeed(.15));
         // controls.fiREEEE().whileTrue(shooter.runMotorSpeed(.3));
-        controls.fireLowPID().whileTrue(shooter.holdMotorSetpoint(Units.RPM.of(4200)));
+        controls.fireLowPID().whileTrue(shooter.holdMotorSetpoint(Units.RPM.of(2000)));
         controls.fireHighPID().whileTrue(shooter.holdMotorSetpoint(Units.RPM.of(5600)));
 
         // 5600 rpm = 10.015m/s @ 52.5 deg = 29ft += 1.5 ft
         // 4200 rpm = 8.763125m/s          = 24 ft += 1 ft
         // 3500 rpm = 7.7894m/s            =xxxx 20 ft += 2 in
 
-        controls.runFeeder().whileTrue(feeder.runFeederMotor(-.5));
+        controls.runFeeder().whileTrue(feeder.runFeederMotor(-.25));
 
-        controls.runIndexer().whileTrue(indexer.runIndexMotor( .4));
+        controls.runIndexer().whileTrue(indexer.runIndexMotor( .1));
 
         controls.runIntake().whileTrue(intake.runIntakeMotor(() -> -.5));
         controls.runIntakePiston().toggleOnTrue(intake.sendIntakeOut());
@@ -156,6 +159,16 @@ public class RobotContainer {
 
 
     public Command getAutonomousCommand() {
-        return Commands.print("No autonomous command configured");
+        return autonomousPlanner.getAutonCommand();
+    }
+
+      public void autonomousInit() {
+        // fieldTracking.setCameraIMUMode(IMUMode.InternalExternalAssist);
+        fieldTracking.setCameraIMUMode(IMUMode.ExternalOnly);
+        fieldTracking.setThrottle(0);
+    }
+
+    public void robotPeriodic() {
+        autonomousPlanner.periodic();
     }
 }

@@ -7,10 +7,10 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import edu.wpi.first.units.measure.Velocity;
 
 public class IndexerIOReal implements IndexerIO{
-    private final SparkMax indexMotor;
+    private final SparkFlex indexMotor;
 
     public IndexerIOReal() {
-        this.indexMotor =  new SparkMax(14, MotorType.kBrushless);
+        this.indexMotor =  new SparkFlex(14, MotorType.kBrushless);
     }
 
     @Override
