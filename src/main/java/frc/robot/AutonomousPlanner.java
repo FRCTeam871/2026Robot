@@ -23,6 +23,7 @@ import frc.robot.Constants;
 import frc.robot.subsystems.Aiming;
 import frc.robot.subsystems.fieldtracking.FieldTracking;
 import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.swervedrive.SwerveDrive;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,7 +48,7 @@ public class AutonomousPlanner {
         Shoot,
 
         OutpostCollect,
-        groundCollect;
+        GroundCollect;
 
        //TODO: make more actions
         public boolean canDoAction(FieldPosition position) {
@@ -149,12 +150,7 @@ public class AutonomousPlanner {
         return scg;
     }
 
-    private boolean generateStage(
-            final SequentialCommandGroup scg,
-            final FieldPosition start,
-            final FieldPosition end,
-            Action action,
-            int i) {
+    private boolean generateStage(final SequentialCommandGroup scg, final FieldPosition start, final FieldPosition end, Action action, int i, Intake intake) {
         PathPlannerPath path = findPath(start, end);
 
         if (action.canDoAction(end) && path != null) {
@@ -191,7 +187,10 @@ public class AutonomousPlanner {
                     scg.addCommands(aiming.shootTrue().withTimeout(Constants.FIRERATE.asPeriod().times(32)));
                     break;
                 case OutpostCollect:
-                    // scg.addCommands(intake.);
+                    scg.addCommands(intake.runIntakeMotor(() -> Constants.ocIntakeMotorSpeed));
+                    break;
+                case GroundCollect:
+                    scg.addCommands(intake.runIntakeMotor(() -> (Constants.ocIntakeMotorSpeed / 2)));
                     break;
                 default:
                     break;
