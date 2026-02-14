@@ -78,6 +78,11 @@ dependencies {
     annotationProcessor "org.littletonrobotics.akit:akit-autolog:$akitJson.version"
 }
 
+gradle.buildFinished {
+    Date now = new Date()
+    println "\n@ ${now.format('MM/dd/yy h:mm a')}"
+}
+
 task(replayWatch, type: JavaExec) {
     mainClass = "org.littletonrobotics.junction.ReplayWatch"
     classpath = sourceSets.main.runtimeClasspath
