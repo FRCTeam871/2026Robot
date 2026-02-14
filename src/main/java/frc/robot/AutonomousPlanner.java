@@ -60,6 +60,7 @@ public class AutonomousPlanner {
     }
 
     private final SwerveDrive swerveDrive;
+    private final Intake intake;
     private final FieldTracking fieldTracking;
     private final Aiming aiming;
 
@@ -73,6 +74,7 @@ public class AutonomousPlanner {
 
     public AutonomousPlanner(Intake intake, SwerveDrive swerveDrive, FieldTracking fieldTracking, Aiming aiming) {
         this.swerveDrive = swerveDrive;
+        this.intake = intake;
         this.fieldTracking = fieldTracking;
         this.aiming = aiming;
 
@@ -150,7 +152,7 @@ public class AutonomousPlanner {
         return scg;
     }
 
-    private boolean generateStage(final SequentialCommandGroup scg, final FieldPosition start, final FieldPosition end, Action action, int i, Intake intake) {
+    private boolean generateStage(final SequentialCommandGroup scg, final FieldPosition start, final FieldPosition end, Action action, int i) {
         PathPlannerPath path = findPath(start, end);
 
         if (action.canDoAction(end) && path != null) {
