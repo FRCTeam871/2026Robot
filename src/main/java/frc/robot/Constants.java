@@ -32,10 +32,12 @@ import frc.robot.subsystems.swerveModule.SwerveModuleIOSparkFlex;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+    public static final Translation2d HUB_POSITION = new Translation2d(Units.Inches.of(158.6 + (47.0 / 2.0)), Units.Inches.of(317.7 / 2.0));
     public static final boolean shouldReplay = false;
-    public static final LinearAcceleration GRAVITY = Units.MetersPerSecondPerSecond.of(-9.81); 
-    public static final Dimensionless SPEEDTRANSFERPERCENT = Units.Percent.of(3.86); /* Change Later update experimentally */
-    public static final Distance SHOOTERWHEELRADIUS = Units.Inches.of(2); 
+    public static final LinearAcceleration GRAVITY = Units.MetersPerSecondPerSecond.of(-9.81);
+    public static final Dimensionless SPEEDTRANSFERPERCENT = Units.Percent
+            .of(3.86); /* TODO: Change Later update experimentally */
+    public static final Distance SHOOTERWHEELRADIUS = Units.Inches.of(2);
     public static final Frequency FIRERATE = Units.Hertz.of(7);
     public static final double ocIntakeMotorSpeed = 1.0;
     //-------------------------------------------------------old
@@ -56,8 +58,6 @@ public final class Constants {
     public static final double MAX_ROTATION_SPEED_RDPS = 2 * Math.PI * 2;
     public static final double LEVER_ARM_VAL = edu.wpi.first.math.util.Units
             .inchesToMeters(Constants.DISTANCE_BETWEEN_WHEELS) / 2;
-
-    public static final Distance ELEVATOR_TOLERANCE = Units.Inches.of(3);
 
     public static final double DISTANCE_BETWEEN_WHEELS = 22.75; // inches
     // INTAKE CONSTANTS
@@ -144,7 +144,7 @@ public final class Constants {
                     1,
                     true,
                     2,
-                    -0.0185555,
+                    -0.0185555 - 0.5,
                     SensorDirectionValue.CounterClockwise_Positive,
                     3,
                     0,
@@ -156,7 +156,7 @@ public final class Constants {
                     6,
                     true,
                     5,
-                    -0.060059,
+                    -0.060059 - 0.75732,
                     SensorDirectionValue.CounterClockwise_Positive,
                     0,
                     0,
@@ -168,7 +168,7 @@ public final class Constants {
                     12,
                     true,
                     11,
-                    -0.0434570,
+                    -0.540282890625,
                     SensorDirectionValue.CounterClockwise_Positive,
                     0,
                     0,
@@ -180,7 +180,7 @@ public final class Constants {
                     7,
                     true,
                     8,
-                    -0.019287109375,
+                    -0.019287109375 - 0.5,
                     SensorDirectionValue.CounterClockwise_Positive,
                     3,
                     5,
@@ -188,7 +188,7 @@ public final class Constants {
     };
 
     public static SwerveModuleIO getRealSwerveModuleIO(ModuleConstants moduleConstants) {
-       return new SwerveModuleIOSparkFlex(moduleConstants);
+        return new SwerveModuleIOSparkFlex(moduleConstants);
     }
 
     public static double deadband(double raw, double threshold) {

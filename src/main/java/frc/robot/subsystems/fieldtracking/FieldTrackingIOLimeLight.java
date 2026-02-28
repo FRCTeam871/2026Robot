@@ -11,12 +11,12 @@ public class FieldTrackingIOLimeLight implements FieldTrackingIO {
                 .getTable("limelight")
                 .getEntry("tid")
                 .getInteger(-1);
-                if(NetworkTableInstance.getDefault().getTable("limelight").containsKey("botpose_orb_wpiblue")){
-        LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
-        inputs.pose = mt2.pose;
-        inputs.timestampSeconds = mt2.timestampSeconds;
-        inputs.tagCount = mt2.tagCount;
-                }
+        if (NetworkTableInstance.getDefault().getTable("limelight").containsKey("botpose_orb_wpiblue")) {
+            LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
+            inputs.pose = mt2.pose;
+            inputs.timestampSeconds = mt2.timestampSeconds;
+            inputs.tagCount = mt2.tagCount;
+        }
         inputs.targetpose_robotspace = NetworkTableInstance.getDefault()
                 .getTable("limelight")
                 .getEntry("targetpose_robotspace")

@@ -12,18 +12,19 @@ public class Intake extends SubsystemBase {
     SparkFlex intakeMotor;
     IntakeIO io;
 
-    public Intake(IntakeIO io){
+    public Intake(IntakeIO io) {
         this.io = io;
         io.setIntakeOut(false);
     }
 
-    public Command runIntakeMotor(DoubleSupplier speed){
-        return run(()-> {
+    public Command runIntakeMotor(DoubleSupplier speed) {
+        return run(() -> {
             io.setSpeed(speed.getAsDouble());
-        }).finallyDo(()->{
+        }).finallyDo(() -> {
             io.setSpeed(0);
         });
-    }   
+    }
+
     public Command sendIntakeOut() {
         return Commands.run(() -> io.setIntakeOut(true))
                 .finallyDo(canceled -> io.setIntakeOut(false));

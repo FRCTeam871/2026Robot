@@ -16,6 +16,8 @@ import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
+import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.events.EventTrigger;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 
@@ -72,7 +74,7 @@ public class RobotContainer {
     final AutonomousPlanner autonomousPlanner;
 
     public RobotContainer() {
- 
+
         FieldTrackingIO fieldTrackingIO = FieldTrackingIO.EMPTY;
         FeederIO feederIO = FeederIO.EMPTY;
         ShooterIO shooterIO = ShooterIO.EMPTY;
@@ -83,25 +85,25 @@ public class RobotContainer {
         SwerveDriveIO swerveDriveIO = SwerveDriveIO.EMPTY;
         compressor = new Compressor(1, PneumaticsModuleType.CTREPCM);
         this.controls = new XboxControls();
-        
+
         if (RobotBase.isSimulation() && Constants.shouldReplay) { // is the world a simulation?
             String logPath = LogFileUtil.findReplayLog();
             Logger.setReplaySource(new WPILOGReader(logPath));
             Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim")));
         }
-        
+
         if (RobotBase.isReal()) { // is it real?
-            fieldTrackingIO = new FieldTrackingIOLimeLight(); 
+            fieldTrackingIO = new FieldTrackingIOLimeLight();
             shooterIO = new ShooterIOReal();
             indexerIO = new IndexerIOReal();
-            // turretIO = new TurretIOReal();
+            turretIO = new TurretIOReal();
             intakeIO = new IntakeIOReal();
             feederIO = new FeederIOReal();
-            // moduleIOs = Arrays.stream(
-            //         Constants.MODULE_CONSTANTS)
-            //         .map(Constants::getRealSwerveModuleIO)
-            //         .toArray(SwerveModuleIO[]::new);
-            // swerveDriveIO = new SwerveDriveIORoll(new AHRS(NavXComType.kMXP_SPI));
+            moduleIOs = Arrays.stream(
+                    Constants.MODULE_CONSTANTS)
+                    .map(Constants::getRealSwerveModuleIO)
+                    .toArray(SwerveModuleIO[]::new);
+            swerveDriveIO = new SwerveDriveIORoll(new AHRS(NavXComType.kMXP_SPI));
 
         }
         final SwerveModuleIO[] moduleIOsFinal = moduleIOs;
@@ -112,11 +114,11 @@ public class RobotContainer {
                     return new SwerveModule(constants.leverArm(), io, constants.label());
                 })
                 .toArray(SwerveModule[]::new);
-        swerveDrive = new SwerveDrive(swerveDriveIO,swerveModules);
+        swerveDrive = new SwerveDrive(swerveDriveIO, swerveModules);
 
         shooter = new Shooter(shooterIO);
         indexer = new Indexer(indexerIO);
-        turret = new Turret(turretIO,swerveDrive);
+        turret = new Turret(turretIO, swerveDrive);
         intake = new Intake(intakeIO);
         feeder = new Feeder(feederIO);
         sequencing = new Sequencing(shooter, intake, indexer, feeder);
@@ -127,7 +129,8 @@ public class RobotContainer {
     }
 
     private void configureBindings() {
-
+        
+        new EventTrigger("Intake").whileTrue(intake.runIntakeMotor(() -> Constants.ocIntakeMotorSpeed));
         // controls.FIREEEEEEEEEEEEEEEEE().whileTrue(shooter.runMotorSpeed(.15));
         // controls.fiREEEE().whileTrue(shooter.runMotorSpeed(.3));
         controls.fireLowPID().whileTrue(shooter.holdMotorSetpoint(Units.RPM.of(2000)));
@@ -139,14 +142,14 @@ public class RobotContainer {
 
         controls.runFeeder().whileTrue(feeder.runFeederMotor(-.25));
 
-        controls.runIndexer().whileTrue(indexer.runIndexMotor( .1));
+        controls.runIndexer().whileTrue(indexer.runIndexMotor(.1));
 
         controls.runIntake().whileTrue(intake.runIntakeMotor(() -> -.5));
         controls.runIntakePiston().toggleOnTrue(intake.sendIntakeOut());
 
-        controls.runSequence().whileTrue(sequencing.shooterCommand(()->Units.RPM.of(2000)));
+        controls.runSequence().whileTrue(sequencing.shooterCommand(() -> Units.RPM.of(2000)));
 
-        controls.toggleAutoShoot().whileTrue(aiming.shootTrue());
+        controls.shoot().whileTrue(aiming.shootTrue());
 
         controls.compressorToggle().onTrue(Commands.runOnce(() -> {
             if (compressor.isEnabled()) {
@@ -157,12 +160,11 @@ public class RobotContainer {
         }));
     }
 
-
     public Command getAutonomousCommand() {
         return autonomousPlanner.getAutonCommand();
     }
 
-      public void autonomousInit() {
+    public void autonomousInit() {
         // fieldTracking.setCameraIMUMode(IMUMode.InternalExternalAssist);
         fieldTracking.setCameraIMUMode(IMUMode.ExternalOnly);
         fieldTracking.setThrottle(0);

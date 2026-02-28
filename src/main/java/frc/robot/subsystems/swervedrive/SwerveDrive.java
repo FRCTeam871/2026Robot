@@ -20,6 +20,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
+import edu.wpi.first.units.Unit;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
@@ -51,15 +52,15 @@ public class SwerveDrive extends SubsystemBase {
 
     private boolean headingHoldEnabled;
     private Rotation2d headingHold;
-    private ProfiledPIDController yawPidController =
-            new ProfiledPIDController(0.08, 0.001, 0, new Constraints(1000, 1000));
+    private ProfiledPIDController yawPidController = new ProfiledPIDController(0.08, 0.001, 0,
+            new Constraints(1000, 1000));
 
     private boolean poseHoldEnabled;
     private Pose2d poseHold;
-    private ProfiledPIDController sidePidController =
-            new ProfiledPIDController(4, 0.001, .1, new Constraints(1000, 1000));
-    private ProfiledPIDController forwardPidController =
-            new ProfiledPIDController(2.5, 0.001, .1, new Constraints(1000, 1000));
+    private ProfiledPIDController sidePidController = new ProfiledPIDController(4, 0.001, .1,
+            new Constraints(1000, 1000));
+    private ProfiledPIDController forwardPidController = new ProfiledPIDController(2.5, 0.001, .1,
+            new Constraints(1000, 1000));
 
     public SwerveDrive(final SwerveDriveIO io, final SwerveModule... swerveModules) {
         yawPidController.enableContinuousInput(0, 360);
@@ -68,8 +69,8 @@ public class SwerveDrive extends SubsystemBase {
         sideRateLimiter = new ChangableSlewRateLimiter(Constants.MAX_SPEED_MPS);
         rotationRateLimiter = new ChangableSlewRateLimiter(Constants.MAX_ROTATION_SPEED_RDPS);
         this.io = io;
-        final Translation2d[] leverArmArray =
-                Arrays.stream(swerveModules).map(SwerveModule::getLeverArm).toArray(Translation2d[]::new);
+        final Translation2d[] leverArmArray = Arrays.stream(swerveModules).map(SwerveModule::getLeverArm)
+                .toArray(Translation2d[]::new);
 
         this.swerveDriveKinematics = new SwerveDriveKinematics(leverArmArray);
         this.poseEstimator = new SwerveDrivePoseEstimator(
@@ -172,7 +173,7 @@ public class SwerveDrive extends SubsystemBase {
      */
     public void updateSpeed(final ChassisSpeeds speeds) {
         double multiplerRateLimit = Constants.MAX_SPEED_MPS;
-        double rotationRateLimit =  Constants.MAX_ROTATION_SPEED_RDPS;
+        double rotationRateLimit = Constants.MAX_ROTATION_SPEED_RDPS;
         // Logger.recordOutput("Drive/RateMultiplier", multiplerRateLimit);
         // Logger.recordOutput("Drive/InputSpeed", speeds);
 
@@ -185,7 +186,7 @@ public class SwerveDrive extends SubsystemBase {
         speeds.omegaRadiansPerSecond = rotationRateLimiter.calculate(speeds.omegaRadiansPerSecond);
 
         // strat 1
-        double speedMultiplier =  1;
+        double speedMultiplier = 1;
         speeds.vxMetersPerSecond = speeds.vxMetersPerSecond * speedMultiplier;
         speeds.vyMetersPerSecond = speeds.vyMetersPerSecond * speedMultiplier;
         speeds.omegaRadiansPerSecond = speeds.omegaRadiansPerSecond * speedMultiplier;
@@ -231,9 +232,25 @@ public class SwerveDrive extends SubsystemBase {
 
     @AutoLogOutput(key = "Drive/EstimatedPose")
     public Pose2d getEstimatedPose() {
+        // TODO: restore
         // return poseEstimator.getEstimatedPosition();
-        Pose2d DUMMY = new Pose2d(5*Math.cos(Timer.getFPGATimestamp()),5*Math.sin(Timer.getFPGATimestamp()), new Rotation2d(Units.Degrees.of(
-            40)));
+        Pose2d DUMMY = new Pose2d(
+                Constants.HUB_POSITION
+                        .minus(new Translation2d(Units.Inches.of(79 + (27 / 2) + (47 / 2)), Units.Inches.of(0))),
+                new Rotation2d(Units.Degrees.of(
+                        0)));
+        // Pose2d DUMMY = new Pose2d(
+        //         Constants.HUB_POSITION
+        //                 .minus(new Translation2d(Units.Inches.of(50 + (27 / 2) + (47 / 2)),
+        //                         Units.Inches.of(-(80 + (27 / 2))))),
+        //         new Rotation2d(Units.Degrees.of(
+        //                 0)));
+        //   Pose2d DUMMY = new Pose2d(
+                // Constants.HUB_POSITION
+                //         .minus(new Translation2d(Units.Inches.of(30 + (27 / 2) + (47 / 2)),
+                //                 Units.Inches.of((90 + (27 / 2))))),
+                // new Rotation2d(Units.Degrees.of(
+                //         0)));
         return DUMMY;
     }
 
@@ -262,14 +279,15 @@ public class SwerveDrive extends SubsystemBase {
 
     public Command doHeadingHoldBlueRelative(Rotation2d rotation) {
         return Commands.runOnce(() -> {
-                    Rotation2d rotation2 = rotation;
-                    if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red) {
-                        rotation2 = FlippingUtil.flipFieldRotation(rotation2);
-                    }
-                    headingHoldEnabled = true;
-                    headingHold = rotation2;
-                })
-                .andThen(Commands.run(() -> {}))
+            Rotation2d rotation2 = rotation;
+            if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red) {
+                rotation2 = FlippingUtil.flipFieldRotation(rotation2);
+            }
+            headingHoldEnabled = true;
+            headingHold = rotation2;
+        })
+                .andThen(Commands.run(() -> {
+                }))
                 .finallyDo(() -> {
                     headingHoldEnabled = false;
                 });
@@ -277,14 +295,15 @@ public class SwerveDrive extends SubsystemBase {
 
     public Command doPoseHoldBlueRelative(Pose2d pose) {
         return Commands.runOnce(() -> {
-                    Pose2d pose2 = pose;
-                    if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red) {
-                        pose2 = FlippingUtil.flipFieldPose(pose2);
-                    }
-                    poseHoldEnabled = true;
-                    poseHold = pose2;
-                })
-                .andThen(Commands.run(() -> {}))
+            Pose2d pose2 = pose;
+            if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red) {
+                pose2 = FlippingUtil.flipFieldPose(pose2);
+            }
+            poseHoldEnabled = true;
+            poseHold = pose2;
+        })
+                .andThen(Commands.run(() -> {
+                }))
                 .finallyDo(() -> {
                     poseHoldEnabled = false;
                 });

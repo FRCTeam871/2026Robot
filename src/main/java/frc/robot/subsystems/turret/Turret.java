@@ -32,6 +32,8 @@ public class Turret extends SubsystemBase {
         io.updateInputs(inputs);
     }
 
+    // TODO: final coordinates
+
     public Pose3d currentPoseOfFuelRelease() {
         Transform3d fuelReleasePoseRelative = new Transform3d(Units.Inches.of(7), Units.Inches.of(0),
                 Units.Inches.of(6), new Rotation3d(Units.Degrees.of(0), Units.Degrees.of(-77), Units.Degrees.of(0)));
@@ -60,7 +62,7 @@ public class Turret extends SubsystemBase {
         Transform3d turretPoseRelative = new Transform3d(Units.Inches.of(-11), Units.Inches.of(0), Units.Inches.of(20),
                 new Rotation3d(Units.Degrees.of(0), Units.Degrees.of(0), inputs.setpointAngle));
         return currentRobotPose.plus(turretPoseRelative);
-    }  
+    }
 
     public void setYawSetpoint(Angle angle) {
         io.setTarget(angle);

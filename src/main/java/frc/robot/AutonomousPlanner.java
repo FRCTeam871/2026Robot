@@ -82,7 +82,13 @@ public class AutonomousPlanner {
 
         this.start = positionDropdown();
 
+
+
+
         // goes for how many auton stages there are
+
+
+
 
         SmartDashboard.putData("Check auton", checkCommand());
         SmartDashboard.putData("Auton/Field", this.field);
@@ -192,7 +198,7 @@ public class AutonomousPlanner {
                     scg.addCommands(intake.runIntakeMotor(() -> Constants.ocIntakeMotorSpeed));
                     break;
                 case GroundCollect:
-                    scg.addCommands(intake.runIntakeMotor(() -> (Constants.ocIntakeMotorSpeed / 2)));
+                    scg.addCommands(intake.runIntakeMotor(() -> (Constants.ocIntakeMotorSpeed / 2)).withTimeout(.5));
                     break;
                 default:
                     break;

@@ -1,5 +1,7 @@
 package frc.robot.subsystems.swervedrive;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.studica.frc.AHRS;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -10,7 +12,9 @@ public class SwerveDriveIOYaw implements SwerveDriveIO {
 
     public SwerveDriveIOYaw(final AHRS gyro) {
         this.gyro = gyro;
-        SmartDashboard.putData("resetGyro", Commands.runOnce(gyro::zeroYaw).ignoringDisable(true));
+        SmartDashboard.putData("resetGyro", Commands.runOnce(()->setCurrentAngle(0)).ignoringDisable(true));
+        SmartDashboard.putData(
+                "resetGyro180", Commands.runOnce(() -> setCurrentAngle(180.0)).ignoringDisable(true));
         gyro.zeroYaw();
     }
 
@@ -23,6 +27,8 @@ public class SwerveDriveIOYaw implements SwerveDriveIO {
 
     @Override
     public void setCurrentAngle(double angle) {
-        // TODO: make it work
+        Logger.recordOutput("Drive/gyroZero", angle);
+        gyro.zeroYaw();
+        gyro.setAngleAdjustment(angle);
     }
 }

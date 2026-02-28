@@ -1,0 +1,91 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.4536885245901643,
+        "y": 4.106885245901639
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 3.2524098360655738,
+        "y": 2.546975409836065
+      },
+      "isLocked": false,
+      "linkedName": "MIDDLESTART"
+    },
+    {
+      "anchor": {
+        "x": 4.6182295081967215,
+        "y": 2.597295081967212
+      },
+      "prevControl": {
+        "x": 3.346885279548784,
+        "y": 2.484006982384722
+      },
+      "nextControl": {
+        "x": 6.070311475409835,
+        "y": 2.726688524590163
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 7.738049180327868,
+        "y": 2.086909836065573
+      },
+      "prevControl": {
+        "x": 7.762516620202648,
+        "y": 1.8014563708598097
+      },
+      "nextControl": {
+        "x": 7.673352459016394,
+        "y": 2.8417049180327867
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 7.738049180327868,
+        "y": 3.76183606557377
+      },
+      "prevControl": {
+        "x": 7.673352459016394,
+        "y": 2.7482540983606545
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "RIGHTTBALLS"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1.5048034934497752,
+      "rotationDegrees": -2.8683705020887484
+    }
+  ],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 4.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 93.41658819177135
+  },
+  "reversed": false,
+  "folder": null,
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 0.0
+  },
+  "useDefaultConstraints": true
+}

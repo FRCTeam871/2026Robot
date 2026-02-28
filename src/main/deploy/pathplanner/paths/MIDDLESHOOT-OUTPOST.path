@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.5327622950819677,
-        "y": 0.8289180327868848
+        "x": 2.1525655737704916,
+        "y": 3.9918688524590165
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.5551229508196727,
-        "y": 0.8073524590163933
+        "x": 2.0591147540983608,
+        "y": 2.0437786885245894
       },
       "isLocked": false,
-      "linkedName": "StartTest"
+      "linkedName": "MIDDLESHOOT"
     },
     {
       "anchor": {
@@ -20,8 +20,8 @@
         "y": 0.6276393442621155
       },
       "prevControl": {
-        "x": 1.3330737704882265,
-        "y": 0.6276393442621155
+        "x": 1.807516393442623,
+        "y": 1.8496885245901624
       },
       "nextControl": null,
       "isLocked": false,
@@ -31,14 +31,7 @@
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [
-    {
-      "name": "Intake",
-      "waypointRelativePos": 0.6588815789473663,
-      "endWaypointRelativePos": 1.0,
-      "command": null
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 4.0,
     "maxAcceleration": 3.0,
@@ -55,7 +48,7 @@
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -177.39743779750017
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }

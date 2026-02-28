@@ -1,16 +1,13 @@
 package frc.robot.subsystems.indexer;
 
 import com.revrobotics.spark.SparkFlex;
-import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
-import edu.wpi.first.units.measure.Velocity;
-
-public class IndexerIOReal implements IndexerIO{
+public class IndexerIOReal implements IndexerIO {
     private final SparkFlex indexMotor;
 
     public IndexerIOReal() {
-        this.indexMotor =  new SparkFlex(14, MotorType.kBrushless);
+        this.indexMotor = new SparkFlex(14, MotorType.kBrushless);
     }
 
     @Override
@@ -19,7 +16,8 @@ public class IndexerIOReal implements IndexerIO{
     }
 
     @Override
-    public void updateInputs(IndexerIOInputs inputs) {/* blenk */}
-
+    public void updateInputs(IndexerIOInputs inputs) {
+        /* blenk */
+    }
 
 }

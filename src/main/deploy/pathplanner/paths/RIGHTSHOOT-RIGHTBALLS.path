@@ -12,7 +12,7 @@
         "y": 2.633237704918032
       },
       "isLocked": false,
-      "linkedName": "shootpos"
+      "linkedName": "RIGHTSHOOTPOS"
     },
     {
       "anchor": {
@@ -57,7 +57,7 @@
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "RIGHTTBALLS"
     }
   ],
   "rotationTargets": [
@@ -86,7 +86,14 @@
     }
   ],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "Intake",
+      "waypointRelativePos": 1.929276315789472,
+      "endWaypointRelativePos": 3.0,
+      "command": null
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 4.0,
     "maxAcceleration": 3.0,

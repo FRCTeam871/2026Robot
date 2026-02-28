@@ -60,7 +60,7 @@ public class Aiming extends SubsystemBase {
         this.sequencing = sequencing;
         wantToShoot = false;
 
-        hub = new Translation3d(Units.Inches.of(158.6 + (47.0 / 2.0)), Units.Inches.of(317.7 / 2.0),
+        hub = new Translation3d(Constants.HUB_POSITION.getMeasureX(), Constants.HUB_POSITION.getMeasureY(),
                 Units.Feet.of(6));
         if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red) {
             Translation2d flipped = FlippingUtil.flipFieldPosition(hub.toTranslation2d());

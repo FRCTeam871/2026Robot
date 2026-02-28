@@ -28,7 +28,7 @@ public class XboxControls implements IControls {
 
     @Override
     public DoubleSupplier driveRotation() {
-        return () -> Constants.deadbandAndExponential(-driveXboxController.getRightX())*.6;
+        return () -> Constants.deadbandAndExponential(-driveXboxController.getRightX()) * .6;
     }
 
     @Override
@@ -45,26 +45,32 @@ public class XboxControls implements IControls {
     public Trigger compressorToggle() {
         return driveXboxController.back();
     }
+
     @Override
     public Trigger fiREEEE() {
         return driveXboxController.leftBumper();
     }
+
     @Override
     public Trigger fireLowPID() {
         return driveXboxController.povRight();
     }
+
     @Override
     public Trigger fireHighPID() {
         return driveXboxController.povLeft();
     }
+
     @Override
     public Trigger runFeeder() {
         return driveXboxController.leftBumper();
     }
+
     @Override
     public Trigger runIndexer() {
-       return driveXboxController.rightBumper();
+        return driveXboxController.rightBumper();
     }
+
     @Override
     public Trigger runIntake() {
         return driveXboxController.a();
@@ -81,7 +87,7 @@ public class XboxControls implements IControls {
     }
 
     @Override
-    public Trigger toggleAutoShoot() {
+    public Trigger shoot() {
         return driveXboxController.povUp();
     }
 }
