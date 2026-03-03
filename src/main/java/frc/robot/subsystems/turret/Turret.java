@@ -36,13 +36,13 @@ public class Turret extends SubsystemBase {
 
     public Pose3d currentPoseOfFuelRelease() {
         Transform3d fuelReleasePoseRelative = new Transform3d(Units.Inches.of(7), Units.Inches.of(0),
-                Units.Inches.of(6), new Rotation3d(Units.Degrees.of(0), Units.Degrees.of(-77), Units.Degrees.of(0)));
+                Units.Inches.of(6), new Rotation3d(Units.Degrees.of(0), Units.Degrees.of(-52.5), Units.Degrees.of(0)));
         return currentTurretPose().plus(fuelReleasePoseRelative);
     }
 
     public Pose3d targetPoseOfFuelRelease() {
         Transform3d fuelReleasePoseRelative = new Transform3d(Units.Inches.of(7), Units.Inches.of(0),
-                Units.Inches.of(6), new Rotation3d(Units.Degrees.of(0), Units.Degrees.of(-77), Units.Degrees.of(0)));
+                Units.Inches.of(6), new Rotation3d(Units.Degrees.of(0), Units.Degrees.of(-52.5), Units.Degrees.of(0)));
         return targetTurretPose().plus(fuelReleasePoseRelative);
     }
 

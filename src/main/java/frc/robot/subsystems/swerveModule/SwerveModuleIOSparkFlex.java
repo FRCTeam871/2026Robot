@@ -17,7 +17,7 @@ import frc.robot.Constants.ModuleConstants;
 
 public class SwerveModuleIOSparkFlex implements SwerveModuleIO {
     private final SparkFlex drive;
-    private final SparkMax steer;
+    private final SparkFlex steer;
     private final CANcoder steeringEncoder;
     private final RelativeEncoder distanceEncoder;
 
@@ -31,8 +31,8 @@ public class SwerveModuleIOSparkFlex implements SwerveModuleIO {
         this.drive.configure(driveConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         this.distanceEncoder = drive.getEncoder();
 
-        this.steer = new SparkMax(moduleConstants.steerId(), MotorType.kBrushless);
-        final SparkMaxConfig steerConfig = new SparkMaxConfig();
+        this.steer = new SparkFlex(moduleConstants.steerId(), MotorType.kBrushless);
+        final SparkFlexConfig steerConfig = new SparkFlexConfig();
         steerConfig.idleMode(IdleMode.kBrake);
         steerConfig.inverted(moduleConstants.steerInverted());
         this.steer.configure(steerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);

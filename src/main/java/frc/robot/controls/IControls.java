@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public interface IControls {
     // positive is fowards
-    public DoubleSupplier fowardsAndBackAxis();
+    public DoubleSupplier forwardsAndBackAxis();
 
     // positive is left
     public DoubleSupplier sideToSideAxis();
@@ -37,4 +37,6 @@ public interface IControls {
     public Trigger runSequence();
 
     public Trigger shoot();
+
+    public Trigger shootToOurHalf();
 }

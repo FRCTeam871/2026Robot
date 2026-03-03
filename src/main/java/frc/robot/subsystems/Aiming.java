@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.Feet;
+import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Radians;
@@ -45,11 +46,13 @@ public class Aiming extends SubsystemBase {
     Turret turret;
     Shooter shooter;
     FieldTracking fieldtracking;
-    Translation3d hub;
     SwerveDrive swerveDrive;
     Sequencing sequencing;
     Optional<LinearVelocity> desiredShootSpeed = Optional.empty();
     boolean wantToShoot;
+    Translation3d hubBlue;
+    Translation3d leftSideShootBlue;
+    Translation3d rightSideShootBlue;
 
     public Aiming(Turret turret, Shooter shooter, FieldTracking fieldtracking, SwerveDrive swerveDrive,
             Sequencing sequencing) {
@@ -60,17 +63,16 @@ public class Aiming extends SubsystemBase {
         this.sequencing = sequencing;
         wantToShoot = false;
 
-        hub = new Translation3d(Constants.HUB_POSITION.getMeasureX(), Constants.HUB_POSITION.getMeasureY(),
+        hubBlue = new Translation3d(Constants.HUB_POSITION.getMeasureX(), Constants.HUB_POSITION.getMeasureY(),
                 Units.Feet.of(6));
-        if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red) {
-            Translation2d flipped = FlippingUtil.flipFieldPosition(hub.toTranslation2d());
-            hub = new Translation3d(flipped.getX(), flipped.getY(), hub.getZ());
-        }
-        /* NOTE: ONLY FOR TESTING! YOU BETTER NOTICE THIS OR YOU'RE COOKED */
+        leftSideShootBlue = new Translation3d(Units.Inches.of(79.3), Units.Inches.of(238.275), Units.Inches.of(0.0));
+        rightSideShootBlue = new Translation3d(Units.Inches.of(79.3), Units.Inches.of(79.425), Units.Inches.of(0.0));
+
+        /* TODO: ONLY FOR TESTING! REMOVE THE IF LATER */
         if (Robot.isSimulation()) { // =========================
             setDefaultCommand(findSpeed().alongWith(fire())); // =========================
         } // =========================
-        /* NOTE: ONLY FOR TESTING! YOU BETTER NOTICE THIS OR YOU'RE COOKED */
+        /* TODO: ONLY FOR TESTING! REMOVE THE IF LATER */
     }
 
     @Override
@@ -86,11 +88,26 @@ public class Aiming extends SubsystemBase {
             Logger.recordOutput("Aiming/TargetTurretPose", turret.targetTurretPose());
             Logger.recordOutput("Aiming/TargetPoseOfFuelRelease", turret.targetPoseOfFuelRelease());
 
+            Translation3d target = hubBlue;
             Translation3d turretTranslation = turret.currentTurretPose().getTranslation();
-            turret.setYawSetpoint(calculateAngle(turretTranslation, hub)
+            if (turretTranslation.getMeasureX().minus(Constants.centerOfField.getMeasureX()).abs(Inches) < (651.2 / 2)
+                    - 158.6) {
+                if (turretTranslation.getY() > 8.06958 / 2
+                        ^ DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red) {
+                    target = leftSideShootBlue;
+                } else {
+                    target = rightSideShootBlue;
+                }
+            }
+            if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red) {
+                Translation2d flipped = FlippingUtil.flipFieldPosition(target.toTranslation2d());
+                target = new Translation3d(flipped.getX(), flipped.getY(), target.getZ());
+            }
+            Logger.recordOutput("Aiming/Target", target);
+            turret.setYawSetpoint(calculateAngle(turretTranslation, target)
                     .minus(swerveDrive.getEstimatedPose().getRotation().getMeasure()));
 
-            desiredShootSpeed = calculateLaunchSpeed(turret.targetPoseOfFuelRelease(), hub);
+            desiredShootSpeed = calculateLaunchSpeed(turret.targetPoseOfFuelRelease(), target);
 
             Logger.recordOutput("Aiming/desiredShootSpeed", desiredShootSpeed.orElse(Units.MetersPerSecond.of(0)));
 
@@ -134,9 +151,9 @@ public class Aiming extends SubsystemBase {
     }
 
     public Command shootTrue() {
-        return run(()-> {
+        return run(() -> {
             wantToShoot = true;
-        }).finallyDo(()->{
+        }).finallyDo(() -> {
             wantToShoot = false;
         });
     }
@@ -192,12 +209,6 @@ public class Aiming extends SubsystemBase {
         Distance displacementX = initialVelocityX.times(time);
         Distance displacementY = initialVelocityY.times(time)
                 .plus(Constants.GRAVITY.times(0.5).times(time).times(time)); // time
-        // times
-        // time
-        // times
-        // time
-        // times
-
         Translation3d xDirection = new Translation3d(1, 0, 0).rotateBy(initialPose.getRotation());
         xDirection = new Translation3d(xDirection.getX(), xDirection.getY(), 0);
         xDirection = xDirection.div(xDirection.getNorm());

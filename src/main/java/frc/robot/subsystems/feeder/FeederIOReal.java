@@ -7,7 +7,7 @@ public class FeederIOReal implements FeederIO {
     private final SparkFlex feederMotor;
 
     public FeederIOReal() {
-        this.feederMotor = new SparkFlex(17, MotorType.kBrushless);
+        this.feederMotor = new SparkFlex(14, MotorType.kBrushless);
     }
 
     @Override

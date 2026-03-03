@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants.ModuleConstants;
 import frc.robot.controls.IControls;
@@ -53,7 +54,7 @@ import frc.robot.subsystems.swerveModule.SwerveModule;
 import frc.robot.subsystems.swerveModule.SwerveModuleIO;
 import frc.robot.subsystems.swervedrive.SwerveDrive;
 import frc.robot.subsystems.swervedrive.SwerveDriveIO;
-import frc.robot.subsystems.swervedrive.SwerveDriveIORoll;
+import frc.robot.subsystems.swervedrive.SwerveDriveIOYaw;
 import frc.robot.subsystems.turret.Turret;
 import frc.robot.subsystems.turret.TurretIO;
 import frc.robot.subsystems.turret.TurretIOReal;
@@ -93,7 +94,7 @@ public class RobotContainer {
         }
 
         if (RobotBase.isReal()) { // is it real?
-            fieldTrackingIO = new FieldTrackingIOLimeLight();
+            // fieldTrackingIO = new FieldTrackingIOLimeLight();
             shooterIO = new ShooterIOReal();
             indexerIO = new IndexerIOReal();
             turretIO = new TurretIOReal();
@@ -103,7 +104,7 @@ public class RobotContainer {
                     Constants.MODULE_CONSTANTS)
                     .map(Constants::getRealSwerveModuleIO)
                     .toArray(SwerveModuleIO[]::new);
-            swerveDriveIO = new SwerveDriveIORoll(new AHRS(NavXComType.kMXP_SPI));
+            swerveDriveIO = new SwerveDriveIOYaw(new AHRS(NavXComType.kMXP_SPI));
 
         }
         final SwerveModuleIO[] moduleIOsFinal = moduleIOs;
@@ -129,7 +130,7 @@ public class RobotContainer {
     }
 
     private void configureBindings() {
-        
+
         new EventTrigger("Intake").whileTrue(intake.runIntakeMotor(() -> Constants.ocIntakeMotorSpeed));
         // controls.FIREEEEEEEEEEEEEEEEE().whileTrue(shooter.runMotorSpeed(.15));
         // controls.fiREEEE().whileTrue(shooter.runMotorSpeed(.3));
@@ -140,12 +141,12 @@ public class RobotContainer {
         // 4200 rpm = 8.763125m/s          = 24 ft += 1 ft
         // 3500 rpm = 7.7894m/s            =xxxx 20 ft += 2 in
 
-        controls.runFeeder().whileTrue(feeder.runFeederMotor(-.25));
+        controls.runFeeder().whileTrue(feeder.runFeederMotor(-.5));
 
-        controls.runIndexer().whileTrue(indexer.runIndexMotor(.1));
+        controls.runIndexer().whileTrue(indexer.runIndexMotor(.3));
 
         controls.runIntake().whileTrue(intake.runIntakeMotor(() -> -.5));
-        controls.runIntakePiston().toggleOnTrue(intake.sendIntakeOut());
+        controls.runIntakePiston().toggleOnTrue(intake.sendIntakeOut()); // first
 
         controls.runSequence().whileTrue(sequencing.shooterCommand(() -> Units.RPM.of(2000)));
 
@@ -168,9 +169,23 @@ public class RobotContainer {
         // fieldTracking.setCameraIMUMode(IMUMode.InternalExternalAssist);
         fieldTracking.setCameraIMUMode(IMUMode.ExternalOnly);
         fieldTracking.setThrottle(0);
+
+        final Command autoCommand = getAutonomousCommand();
+
+        if (autoCommand != null) {
+            CommandScheduler.getInstance().schedule(autoCommand);
+        }
     }
 
     public void robotPeriodic() {
         autonomousPlanner.periodic();
+    }
+
+    public void teleopInit() {
+        swerveDrive.setDefaultCommand(swerveDrive.manualDrive(
+                controls.forwardsAndBackAxis(),
+                controls.sideToSideAxis(),
+                controls.driveRotation()));
+        
     }
 }

@@ -17,7 +17,7 @@ public class XboxControls implements IControls {
     }
 
     @Override
-    public DoubleSupplier fowardsAndBackAxis() {
+    public DoubleSupplier forwardsAndBackAxis() {
         return () -> Constants.deadbandAndExponential(-driveXboxController.getLeftY());
     }
 
@@ -73,7 +73,7 @@ public class XboxControls implements IControls {
 
     @Override
     public Trigger runIntake() {
-        return driveXboxController.a();
+        return driveXboxController.a();         // hold
     }
 
     @Override
@@ -83,11 +83,17 @@ public class XboxControls implements IControls {
 
     @Override
     public Trigger runSequence() {
-        return driveXboxController.b();
+        return driveXboxController.b();         // hold
     }
 
     @Override
     public Trigger shoot() {
         return driveXboxController.povUp();
     }
+
+    @Override
+    public Trigger shootToOurHalf() {
+        return systemXboxController.a();
+    }
+
 }

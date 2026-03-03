@@ -96,12 +96,14 @@ public class SwerveDrive extends SubsystemBase {
         return config;
     }
 
-    public Command manualDrive(final DoubleSupplier vx, final DoubleSupplier vy, final DoubleSupplier omegarad) {
+    public Command manualDrive(final DoubleSupplier vFoward, final DoubleSupplier vLeft, final DoubleSupplier omegarad) {
         return run(() -> {
             ChassisSpeeds chassisSpeeds = new ChassisSpeeds(
-                    vy.getAsDouble() * Constants.MAX_SPEED_MPS,
-                    vx.getAsDouble() * Constants.MAX_SPEED_MPS,
+                    vFoward.getAsDouble() * Constants.MAX_SPEED_MPS,
+                    vLeft.getAsDouble() * Constants.MAX_SPEED_MPS,
                     omegarad.getAsDouble() * Constants.MAX_ROTATION_SPEED_RDPS);
+
+                    Logger.recordOutput("Drive/targetSpeeds", chassisSpeeds);
             if (fieldOrientation) {
                 Rotation2d rotation = getEstimatedPose().getRotation();
                 if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red) {
@@ -109,6 +111,7 @@ public class SwerveDrive extends SubsystemBase {
                 }
                 chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(chassisSpeeds, rotation);
             }
+
             // might not want to make this zero
             if (headingHoldEnabled && chassisSpeeds.omegaRadiansPerSecond == 0) {
                 final double yawout = yawPidController.calculate(
@@ -145,12 +148,12 @@ public class SwerveDrive extends SubsystemBase {
         }
     }
 
-    // @AutoLogOutput(key = "Drive/ChassisSpeeds")
+    @AutoLogOutput(key = "Drive/ChassisSpeeds")
     public ChassisSpeeds getChassisSpeeds() {
         return swerveDriveKinematics.toChassisSpeeds(getModuleStates());
     }
 
-    // @AutoLogOutput(key = "Drive/ModuleStates")
+    @AutoLogOutput(key = "Drive/ModuleStates")
     public SwerveModuleState[] getModuleStates() {
         return Arrays.stream(swerveModules).map(SwerveModule::getState).toArray(SwerveModuleState[]::new);
     }
@@ -164,6 +167,7 @@ public class SwerveDrive extends SubsystemBase {
         for (int i = 0; i < swerveModules.length; i++) {
             swerveModules[i].setState(states[i]);
         }
+        Logger.recordOutput("Drive/targetStates", states);
     }
 
     /**
@@ -233,25 +237,30 @@ public class SwerveDrive extends SubsystemBase {
     @AutoLogOutput(key = "Drive/EstimatedPose")
     public Pose2d getEstimatedPose() {
         // TODO: restore
-        // return poseEstimator.getEstimatedPosition();
-        Pose2d DUMMY = new Pose2d(
-                Constants.HUB_POSITION
-                        .minus(new Translation2d(Units.Inches.of(79 + (27 / 2) + (47 / 2)), Units.Inches.of(0))),
-                new Rotation2d(Units.Degrees.of(
-                        0)));
+        return poseEstimator.getEstimatedPosition();
         // Pose2d DUMMY = new Pose2d(
         //         Constants.HUB_POSITION
-        //                 .minus(new Translation2d(Units.Inches.of(50 + (27 / 2) + (47 / 2)),
-        //                         Units.Inches.of(-(80 + (27 / 2))))),
+        //                 .minus(new Translation2d(Units.Inches.of(79 + (27 / 2) + (47 / 2)), Units.Inches.of(0))),
         //         new Rotation2d(Units.Degrees.of(
         //                 0)));
-        //   Pose2d DUMMY = new Pose2d(
-                // Constants.HUB_POSITION
-                //         .minus(new Translation2d(Units.Inches.of(30 + (27 / 2) + (47 / 2)),
-                //                 Units.Inches.of((90 + (27 / 2))))),
-                // new Rotation2d(Units.Degrees.of(
-                //         0)));
-        return DUMMY;
+        // Pose2d DUMMY = new Pose2d(
+        // Constants.HUB_POSITION
+        //         .minus(new Translation2d(Units.Inches.of(50 + (27 / 2) + (47 / 2)),
+        //                 Units.Inches.of(-(80 + (27 / 2))))),
+        // new Rotation2d(Units.Degrees.of(
+        //         0)));
+        // Pose2d DUMMY = new Pose2d(
+        //         Constants.HUB_POSITION
+        //                 .minus(new Translation2d(Units.Inches.of(-250),
+        //                         Units.Inches.of((90 + (27 / 2))))),
+        //         new Rotation2d(Units.Degrees.of(
+        //                 0)));
+        //  Pose2d DUMMY = new Pose2d(
+        //         Constants.HUB_POSITION
+        //                 .plus(new Translation2d(Units.Inches.of(79 + (27 / 2) + (47 / 2)), Units.Inches.of(60))),
+        //         new Rotation2d(Units.Degrees.of(
+        //                 0)));
+        // return DUMMY;
     }
 
     public double getYawRate() {
