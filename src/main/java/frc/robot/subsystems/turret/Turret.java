@@ -67,4 +67,12 @@ public class Turret extends SubsystemBase {
     public void setYawSetpoint(Angle angle) {
         io.setTarget(angle);
     }
+
+   public Command runTurretMotor(DoubleSupplier angle) {
+        return run(() -> {
+            io.setTarget(Units.Degrees.of(angle.getAsDouble()*90));
+        }).finallyDo(() -> {
+            io.setTarget(Units.Degrees.of(0));
+        });
+    }
 }

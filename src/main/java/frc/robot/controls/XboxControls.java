@@ -96,4 +96,8 @@ public class XboxControls implements IControls {
         return systemXboxController.a();
     }
 
+    @Override
+    public DoubleSupplier runTurretPID() {
+        return ()-> driveXboxController.getRightY();
+    }
 }

@@ -8,8 +8,6 @@ import com.ctre.phoenix6.signals.SensorDirectionValue;
 
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.units.FrequencyUnit;
-import edu.wpi.first.units.Unit;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Dimensionless;
 import edu.wpi.first.units.measure.Distance;
@@ -70,7 +68,7 @@ public final class Constants {
     public static final Time PISTON_OUT_TIME = Units.Seconds.of(0.25);
     public static final Pose3d[] EMPTY_POSE_ARRAY = {};
     public static final int[] EMPTY_INT_ARRAY = {};
-
+    public static final double TURRETCONVERSIONFACTOR = 1/((3.3/3600)*10);
     public static final int AUTON_STAGES = 7;
 
     public record ModuleConstants(

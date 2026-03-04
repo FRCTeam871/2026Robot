@@ -39,4 +39,6 @@ public interface IControls {
     public Trigger shoot();
 
     public Trigger shootToOurHalf();
+
+    public DoubleSupplier runTurretPID();
 }

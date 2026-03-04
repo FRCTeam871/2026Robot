@@ -100,11 +100,11 @@ public class RobotContainer {
             turretIO = new TurretIOReal();
             intakeIO = new IntakeIOReal();
             feederIO = new FeederIOReal();
-            moduleIOs = Arrays.stream(
-                    Constants.MODULE_CONSTANTS)
-                    .map(Constants::getRealSwerveModuleIO)
-                    .toArray(SwerveModuleIO[]::new);
-            swerveDriveIO = new SwerveDriveIOYaw(new AHRS(NavXComType.kMXP_SPI));
+            // moduleIOs = Arrays.stream(
+            //         Constants.MODULE_CONSTANTS)
+            //         .map(Constants::getRealSwerveModuleIO)
+            //         .toArray(SwerveModuleIO[]::new);
+            // swerveDriveIO = new SwerveDriveIOYaw(new AHRS(NavXComType.kMXP_SPI));
 
         }
         final SwerveModuleIO[] moduleIOsFinal = moduleIOs;
@@ -141,6 +141,7 @@ public class RobotContainer {
         // 4200 rpm = 8.763125m/s          = 24 ft += 1 ft
         // 3500 rpm = 7.7894m/s            =xxxx 20 ft += 2 in
 
+        turret.setDefaultCommand(turret.runTurretMotor(controls.runTurretPID()));
         controls.runFeeder().whileTrue(feeder.runFeederMotor(-.5));
 
         controls.runIndexer().whileTrue(indexer.runIndexMotor(.3));
