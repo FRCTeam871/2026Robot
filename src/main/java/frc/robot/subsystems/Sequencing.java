@@ -19,20 +19,34 @@ public class Sequencing extends SubsystemBase {
     Intake intake;
     Indexer indexer;
     Feeder feeder;
-    public Sequencing(Shooter shooter, Intake intake, Indexer indexer, Feeder feeder){
+
+    public Sequencing(Shooter shooter, Intake intake, Indexer indexer, Feeder feeder) {
         this.shooter = shooter;
         this.indexer = indexer;
         this.intake = intake;
         this.feeder = feeder;
     }
+
     public Command shooterCommand(Supplier<AngularVelocity> rpmSetpoint) {
 
         // alongWith runs 2 commands at once
         return shooter.holdMotorSetpoint(rpmSetpoint)
-            .alongWith(
-                new ConditionalCommand(feeder.runFeederMotor(.25), feeder.runFeederMotor(0), () -> shooter.isAtGoalRPM())).alongWith(
-                new ConditionalCommand(indexer.runIndexMotor( .2), indexer.runIndexMotor(0), ()-> shooter.isAtGoalRPM())); // <- This lambda converts the command into a BooleanSupplier function
-                
+                .alongWith(
+
+                        feeder.runFeederMotor(() -> {
+                            if (shooter.isAtGoalRPM()) {
+                                return -.5;
+                            } else {
+                                return 0;
+                            }
+                        }),
+                        indexer.runIndexMotor(() -> {
+                            if (shooter.isAtGoalRPM()) {
+                                return .2;
+                            } else {
+                                return 0;
+                            }
+                        }));
         // return run(() -> {
         //     shooter.holdMotorSetpoint(rpmSetpoint);
         //     if (shooter.isAtGoalRPM()) {

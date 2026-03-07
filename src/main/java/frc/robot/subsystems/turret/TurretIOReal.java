@@ -42,7 +42,7 @@ public class TurretIOReal implements TurretIO {
         updatePIDConstants(0.005, 0, 0.0, 0, 0, 0, 100000, 200000, 20000000);
         SmartDashboard.putData(applyPIDConstants());
         config.apply(new SoftLimitConfig().forwardSoftLimitEnabled(true).reverseSoftLimitEnabled(true)
-                .reverseSoftLimit(-68 + turretZero).forwardSoftLimit(90 + turretZero));
+                .reverseSoftLimit(-68 + turretZero).forwardSoftLimit(90 + turretZero));     // checks if the angle of the turret is what we set it in
         config.apply(config.analogSensor.positionConversionFactor(Constants.TURRETCONVERSIONFACTOR)
                 .velocityConversionFactor(Constants.TURRETCONVERSIONFACTOR));
         config.apply(config.inverted(true));

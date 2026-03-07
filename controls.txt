@@ -1,0 +1,10 @@
+Controls
+controller 1
+left stick is drive
+right stick is turn
+left bumper intake
+right bumper shoot
+A extends intake
+pov left manual turret control left
+pov right manual turret control right
+pov down turret goes to 0

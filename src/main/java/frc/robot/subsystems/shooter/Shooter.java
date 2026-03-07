@@ -6,6 +6,7 @@ import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
+import java.io.PrintStream;
 import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
@@ -68,7 +69,8 @@ public class Shooter extends SubsystemBase {
         return Units.MetersPerSecond.of(6.7);
     }
 
-    private void motorLogSetter(SysIdRoutineLog log) {
+    private void 
+    motorLogSetter(SysIdRoutineLog log) {
         log.motor("shooter-wheel")
                 .voltage(
                         m_appliedVoltage.mut_replace(
@@ -80,7 +82,6 @@ public class Shooter extends SubsystemBase {
     @Override
     public void periodic() {
         io.updateInputs(inputs);
-
         Logger.recordOutput("RPM", inputs.velocity);
     }
 

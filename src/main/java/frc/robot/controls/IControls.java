@@ -5,7 +5,7 @@ import java.util.function.DoubleSupplier;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public interface IControls {
-    // positive is fowards
+    // positive is forwards
     public DoubleSupplier forwardsAndBackAxis();
 
     // positive is left
@@ -37,8 +37,6 @@ public interface IControls {
     public Trigger runSequence();
 
     public Trigger shoot();
-
-    public Trigger shootToOurHalf();
 
     public DoubleSupplier runTurretPID();
 }

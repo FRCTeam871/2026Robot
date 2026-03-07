@@ -21,6 +21,7 @@ import com.pathplanner.lib.events.EventTrigger;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 
+import edu.wpi.first.hal.SimDevice.Direction;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
@@ -134,17 +135,21 @@ public class RobotContainer {
         new EventTrigger("Intake").whileTrue(intake.runIntakeMotor(() -> Constants.ocIntakeMotorSpeed));
         // controls.FIREEEEEEEEEEEEEEEEE().whileTrue(shooter.runMotorSpeed(.15));
         // controls.fiREEEE().whileTrue(shooter.runMotorSpeed(.3));
-        controls.fireLowPID().whileTrue(shooter.holdMotorSetpoint(Units.RPM.of(2000)));
+        controls.fireLowPID().whileTrue(shooter.holdMotorSetpoint(Units.RPM.of(1100)));
         controls.fireHighPID().whileTrue(shooter.holdMotorSetpoint(Units.RPM.of(5600)));
 
+        // controls.fireHighPID().whileTrue(shooter.quasiStatic(edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction.kForward));
+        // controls.fireLowPID().whileTrue(shooter.quasiStatic(edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction.kReverse));
+        // controls.fiREEEE().whileTrue(shooter.dynamic(edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction.kForward));
+        // controls.FIREEEEEEEEEEEEEEEEE().whileTrue(shooter.dynamic(edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction.kReverse));
         // 5600 rpm = 10.015m/s @ 52.5 deg = 29ft += 1.5 ft
         // 4200 rpm = 8.763125m/s          = 24 ft += 1 ft
         // 3500 rpm = 7.7894m/s            =xxxx 20 ft += 2 in
 
-        turret.setDefaultCommand(turret.runTurretMotor(controls.runTurretPID()));
-        controls.runFeeder().whileTrue(feeder.runFeederMotor(-.5));
+        // turret.setDefaultCommand(turret.runTurretMotor(controls.runTurretPID()));
+        controls.runFeeder().whileTrue(feeder.runFeederMotor(()-> .5));
 
-        controls.runIndexer().whileTrue(indexer.runIndexMotor(.3));
+        controls.runIndexer().whileTrue(indexer.runIndexMotor(()->.3));
 
         controls.runIntake().whileTrue(intake.runIntakeMotor(() -> -.5));
         controls.runIntakePiston().toggleOnTrue(intake.sendIntakeOut()); // first
@@ -153,13 +158,13 @@ public class RobotContainer {
 
         controls.shoot().whileTrue(aiming.shootTrue());
 
-        controls.compressorToggle().onTrue(Commands.runOnce(() -> {
-            if (compressor.isEnabled()) {
-                compressor.disable();
-            } else {
-                compressor.enableDigital();
-            }
-        }));
+        // controls.compressorToggle().onTrue(Commands.runOnce(() -> {
+        //     if (compressor.isEnabled()) {
+        //         compressor.disable();
+        //     } else {
+        //         compressor.enableDigital();
+        //     }
+        // }));
     }
 
     public Command getAutonomousCommand() {
@@ -187,6 +192,6 @@ public class RobotContainer {
                 controls.forwardsAndBackAxis(),
                 controls.sideToSideAxis(),
                 controls.driveRotation()));
-        
+
     }
 }

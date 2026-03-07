@@ -67,17 +67,12 @@ public class Aiming extends SubsystemBase {
                 Units.Feet.of(6));
         leftSideShootBlue = new Translation3d(Units.Inches.of(79.3), Units.Inches.of(238.275), Units.Inches.of(0.0));
         rightSideShootBlue = new Translation3d(Units.Inches.of(79.3), Units.Inches.of(79.425), Units.Inches.of(0.0));
-
-        /* TODO: ONLY FOR TESTING! REMOVE THE IF LATER */
-        if (Robot.isSimulation()) { // =========================
-            setDefaultCommand(findSpeed().alongWith(fire())); // =========================
-        } // =========================
-        /* TODO: ONLY FOR TESTING! REMOVE THE IF LATER */
+        setDefaultCommand(findSpeed().alongWith(fire()));
     }
 
     @Override
     public void periodic() {
-
+        Logger.recordOutput("Aiming/wantToShoot", wantToShoot);
     }
 
     public Command findSpeed() {
@@ -110,9 +105,10 @@ public class Aiming extends SubsystemBase {
             desiredShootSpeed = calculateLaunchSpeed(turret.targetPoseOfFuelRelease(), target);
 
             Logger.recordOutput("Aiming/desiredShootSpeed", desiredShootSpeed.orElse(Units.MetersPerSecond.of(0)));
+            Logger.recordOutput("Aiming/realDesiredShootSpeed", desiredShootSpeed.orElse(Units.MetersPerSecond.of(0)));
 
             boolean isTrajectoryInvalid = desiredShootSpeed.isEmpty()
-                    || desiredShootSpeed.get().gt(Units.MetersPerSecond.of(10))
+                    || desiredShootSpeed.get().gt(Units.MetersPerSecond.of(20))
                     || desiredShootSpeed.get().lt(Units.MetersPerSecond.of(1));
 
             makeFuelTrajectoryArray(
@@ -126,7 +122,8 @@ public class Aiming extends SubsystemBase {
                 Logger.recordOutput("Aiming/TrajectoryPath", fuelTrajectory);
                 Logger.recordOutput("Aiming/InitialPose", turret.targetPoseOfFuelRelease());
                 desiredShootSpeed = Optional.empty();
-
+                Logger.recordOutput("Aiming/realDesiredShootSpeed",
+                        desiredShootSpeed.orElse(Units.MetersPerSecond.of(0)));
                 return;
             }
 
@@ -137,6 +134,8 @@ public class Aiming extends SubsystemBase {
 
             if (!wantToShoot) {
                 desiredShootSpeed = Optional.empty();
+                Logger.recordOutput("Aiming/realDesiredShootSpeed",
+                        desiredShootSpeed.orElse(Units.MetersPerSecond.of(0)));
                 return;
             }
 
@@ -144,14 +143,27 @@ public class Aiming extends SubsystemBase {
     }
 
     private Command fire() {
-        return new ConditionalCommand(
-                sequencing.shooterCommand(() -> shooter.convertShootSpeedToRPM(desiredShootSpeed.get())),
-                Commands.none(),
-                () -> desiredShootSpeed.isPresent());
+        Command doShoot = sequencing.shooterCommand(() -> shooter.convertShootSpeedToRPM(desiredShootSpeed.get()));
+
+        return Commands.run(() -> {
+            Logger.recordOutput("Aiming/doShoot", doShoot.isScheduled());
+            if (desiredShootSpeed.isPresent()) {
+                // start command if not running
+                if (!doShoot.isScheduled()) {
+                    CommandScheduler.getInstance().schedule(doShoot);
+                }
+            } else {
+                // stop command if running
+                if (doShoot.isScheduled()) {
+                    CommandScheduler.getInstance().cancel(doShoot);
+                }
+                //TODO: change way of canceling as it crashes when release of button
+            }
+        });
     }
 
     public Command shootTrue() {
-        return run(() -> {
+        return Commands.run(() -> {
             wantToShoot = true;
         }).finallyDo(() -> {
             wantToShoot = false;

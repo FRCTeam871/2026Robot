@@ -2,6 +2,8 @@ package frc.robot.subsystems.shooter;
 
 import static edu.wpi.first.units.Units.RPM;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
@@ -14,6 +16,7 @@ import com.revrobotics.spark.config.SparkFlexConfig;
 
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Velocity;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -31,11 +34,10 @@ public class ShooterIOReal implements ShooterIO {
         this.shooterMotor = new SparkFlex(13, MotorType.kBrushless);
         m_shooterEncoder = shooterMotor.getEncoder();
         this.m_shooterMotorController = shooterMotor.getClosedLoopController();
-
         this.config = new SparkFlexConfig();
-        updatePIDConstants(0.0005, 0, 0.04, 0.0035, 0.001751, 0.00040043);
+        //In sysID put scale to 60 because 60 seconds in a minute
+        updatePIDConstants(0.0005, 0, 0.04, 0.055488, 0.0017456, 0.00025453);
         SmartDashboard.putData(applyPIDConstants());
-
     }
 
     public void updatePIDConstants(double kP, double kI, double kD, double kS, double kV, double kA) {
@@ -62,7 +64,8 @@ public class ShooterIOReal implements ShooterIO {
         inputs.velocity = Units.RPM.of(m_shooterEncoder.getVelocity());
         inputs.motorVoltage = Units.Volts.of(shooterMotor.getAppliedOutput() * shooterMotor.getBusVoltage());
         inputs.position = Units.Rotations.of(m_shooterEncoder.getPosition());
-        inputs.isAtRPMSetpoint = m_shooterMotorController.isAtSetpoint();
+        inputs.isAtRPMSetpoint = isRoughlyAtSetpoint(m_shooterMotorController.getSetpoint());
+        Logger.recordOutput("isAtSetpoint",isRoughlyAtSetpoint(m_shooterMotorController.getSetpoint()));
     }
 
     @Override
@@ -79,6 +82,9 @@ public class ShooterIOReal implements ShooterIO {
     public void setVoltage(Voltage v) {
         shooterMotor.setVoltage(v);
 
+    }
+    public boolean isRoughlyAtSetpoint(double setpoint){
+            return Math.abs(m_shooterEncoder.getVelocity() - setpoint) < 150;
     }
 
     public Command applyPIDConstants() {

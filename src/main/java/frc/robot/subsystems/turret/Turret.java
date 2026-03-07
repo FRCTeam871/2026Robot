@@ -35,14 +35,26 @@ public class Turret extends SubsystemBase {
     // TODO: final coordinates
 
     public Pose3d currentPoseOfFuelRelease() {
-        Transform3d fuelReleasePoseRelative = new Transform3d(Units.Inches.of(7), Units.Inches.of(0),
-                Units.Inches.of(6), new Rotation3d(Units.Degrees.of(0), Units.Degrees.of(-52.5), Units.Degrees.of(0)));
+        Transform3d fuelReleasePoseRelative = new Transform3d(
+                Units.Inches.of(0.5),
+                Units.Inches.of(0),
+                Units.Inches.of(7),
+                new Rotation3d(
+                        Units.Degrees.of(0),
+                        Units.Degrees.of(-52.5),
+                        Units.Degrees.of(0)));
         return currentTurretPose().plus(fuelReleasePoseRelative);
     }
 
     public Pose3d targetPoseOfFuelRelease() {
-        Transform3d fuelReleasePoseRelative = new Transform3d(Units.Inches.of(7), Units.Inches.of(0),
-                Units.Inches.of(6), new Rotation3d(Units.Degrees.of(0), Units.Degrees.of(-52.5), Units.Degrees.of(0)));
+        Transform3d fuelReleasePoseRelative = new Transform3d(
+                Units.Inches.of(0.5),
+                Units.Inches.of(0),
+                Units.Inches.of(7),
+                new Rotation3d(
+                        Units.Degrees.of(0),
+                        Units.Degrees.of(-52.5),
+                        Units.Degrees.of(0)));
         return targetTurretPose().plus(fuelReleasePoseRelative);
     }
 
@@ -50,8 +62,14 @@ public class Turret extends SubsystemBase {
         Pose3d currentRobotPose = new Pose3d(swerveDrive.getEstimatedPose());
         // Pose3d currentRobotPose = new Pose3d(Math.cos(5),Math.cos(2), 0,new
         // Rotation3d(0,0,0));
-        Transform3d turretPoseRelative = new Transform3d(Units.Inches.of(-11), Units.Inches.of(0), Units.Inches.of(20),
-                new Rotation3d(Units.Degrees.of(0), Units.Degrees.of(0), inputs.turretAngle));
+        Transform3d turretPoseRelative = new Transform3d(
+                Units.Inches.of(-8),
+                Units.Inches.of(0),
+                Units.Inches.of(21.25),
+                new Rotation3d(
+                        Units.Degrees.of(0),
+                        Units.Degrees.of(0),
+                        inputs.turretAngle));
         return currentRobotPose.plus(turretPoseRelative);
     }
 
@@ -59,7 +77,10 @@ public class Turret extends SubsystemBase {
         Pose3d currentRobotPose = new Pose3d(swerveDrive.getEstimatedPose());
         // Pose3d currentRobotPose = new Pose3d(Math.cos(5),Math.cos(2), 0,new
         // Rotation3d(0,0,0));
-        Transform3d turretPoseRelative = new Transform3d(Units.Inches.of(-11), Units.Inches.of(0), Units.Inches.of(20),
+        Transform3d turretPoseRelative = new Transform3d(
+                Units.Inches.of(-8),
+                Units.Inches.of(0),
+                Units.Inches.of(21.25),
                 new Rotation3d(Units.Degrees.of(0), Units.Degrees.of(0), inputs.setpointAngle));
         return currentRobotPose.plus(turretPoseRelative);
     }
@@ -68,9 +89,9 @@ public class Turret extends SubsystemBase {
         io.setTarget(angle);
     }
 
-   public Command runTurretMotor(DoubleSupplier angle) {
+    public Command runTurretMotor(DoubleSupplier angle) {
         return run(() -> {
-            io.setTarget(Units.Degrees.of(angle.getAsDouble()*90));
+            io.setTarget(Units.Degrees.of(angle.getAsDouble() * 90));
         }).finallyDo(() -> {
             io.setTarget(Units.Degrees.of(0));
         });

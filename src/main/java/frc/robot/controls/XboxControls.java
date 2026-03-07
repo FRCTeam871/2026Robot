@@ -53,51 +53,46 @@ public class XboxControls implements IControls {
 
     @Override
     public Trigger fireLowPID() {
-        return driveXboxController.povRight();
+        return driveXboxController.back();
     }
 
     @Override
     public Trigger fireHighPID() {
-        return driveXboxController.povLeft();
+        return driveXboxController.leftTrigger();
     }
 
     @Override
     public Trigger runFeeder() {
-        return driveXboxController.leftBumper();
-    }
-
-    @Override
-    public Trigger runIndexer() {
-        return driveXboxController.rightBumper();
-    }
-
-    @Override
-    public Trigger runIntake() {
-        return driveXboxController.a();         // hold
-    }
-
-    @Override
-    public Trigger runIntakePiston() {
-        return driveXboxController.y();
-    }
-
-    @Override
-    public Trigger runSequence() {
-        return driveXboxController.b();         // hold
-    }
-
-    @Override
-    public Trigger shoot() {
         return driveXboxController.povUp();
     }
 
     @Override
-    public Trigger shootToOurHalf() {
-        return systemXboxController.a();
+    public Trigger runIndexer() {
+        return driveXboxController.povRight();
+    }
+
+    @Override
+    public Trigger runIntake() {
+        return driveXboxController.leftBumper(); // hold
+    }
+
+    @Override
+    public Trigger runIntakePiston() {
+        return driveXboxController.a();
+    }
+
+    @Override
+    public Trigger runSequence() {
+        return driveXboxController.b(); // hold
+    }
+
+    @Override
+    public Trigger shoot() {
+        return driveXboxController.rightBumper();
     }
 
     @Override
     public DoubleSupplier runTurretPID() {
-        return ()-> driveXboxController.getRightY();
+        return () -> driveXboxController.getRightY();
     }
 }

@@ -1,5 +1,7 @@
 package frc.robot.subsystems.indexer;
 
+import java.util.function.DoubleSupplier;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.indexer.IndexerIO.IndexerIOInputs;
@@ -17,9 +19,9 @@ public class Indexer extends SubsystemBase {
         io.updateInputs(inputs);
     }
 
-    public Command runIndexMotor(double speed) {
+    public Command runIndexMotor(DoubleSupplier speed) {
         return run(() -> {
-            io.runIndexMotor(speed);
+            io.runIndexMotor(speed.getAsDouble());
         }).finallyDo(() -> {
             io.runIndexMotor(0);
         });
