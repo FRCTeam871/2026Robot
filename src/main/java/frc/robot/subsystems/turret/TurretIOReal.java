@@ -33,7 +33,7 @@ public class TurretIOReal implements TurretIO {
     private final double turretZero = 192.111;
 
     public TurretIOReal() {
-        this.turretMotor = new SparkMax(16, MotorType.kBrushless);
+        this.turretMotor = new SparkMax(44, MotorType.kBrushless);
         m_Turret_Encoder = turretMotor.getAnalog();
         this.m_TurretMotorController = turretMotor.getClosedLoopController();
 
@@ -42,7 +42,7 @@ public class TurretIOReal implements TurretIO {
         updatePIDConstants(0.005, 0, 0.0, 0, 0, 0, 100000, 200000, 20000000);
         SmartDashboard.putData(applyPIDConstants());
         config.apply(new SoftLimitConfig().forwardSoftLimitEnabled(true).reverseSoftLimitEnabled(true)
-                .reverseSoftLimit(-68 + turretZero).forwardSoftLimit(90 + turretZero));     // checks if the angle of the turret is what we set it in
+                .reverseSoftLimit(-68 + turretZero).forwardSoftLimit(90 + turretZero)); // checks if the angle of the turret is what we set it in
         config.apply(config.analogSensor.positionConversionFactor(Constants.TURRETCONVERSIONFACTOR)
                 .velocityConversionFactor(Constants.TURRETCONVERSIONFACTOR));
         config.apply(config.inverted(true));

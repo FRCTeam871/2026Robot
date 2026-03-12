@@ -67,7 +67,7 @@ public class RobotContainer {
     final Turret turret;
     final Intake intake;
     final Feeder feeder;
-    final Compressor compressor;
+    Compressor compressor;
     final Aiming aiming;
     final Sequencing sequencing;
     final FieldTracking fieldTracking;
@@ -85,7 +85,7 @@ public class RobotContainer {
         IntakeIO intakeIO = IntakeIO.EMPTY;
         SwerveModuleIO[] moduleIOs = Collections.nCopies(4, SwerveModuleIO.EMPTY).toArray(SwerveModuleIO[]::new);
         SwerveDriveIO swerveDriveIO = SwerveDriveIO.EMPTY;
-        compressor = new Compressor(1, PneumaticsModuleType.CTREPCM);
+        //compressor = new Compressor(1, PneumaticsModuleType.CTREPCM);
         this.controls = new XboxControls();
 
         if (RobotBase.isSimulation() && Constants.shouldReplay) { // is the world a simulation?
@@ -98,13 +98,13 @@ public class RobotContainer {
             fieldTrackingIO = new FieldTrackingIOLimeLight();
             shooterIO = new ShooterIOReal();
             indexerIO = new IndexerIOReal();
-            turretIO = new TurretIOReal();
+            // turretIO = new TurretIOReal();
             intakeIO = new IntakeIOReal();
             feederIO = new FeederIOReal();
-            // moduleIOs = Arrays.stream(
-            //         Constants.MODULE_CONSTANTS)
-            //         .map(Constants::getRealSwerveModuleIO)
-            //         .toArray(SwerveModuleIO[]::new);
+            moduleIOs = Arrays.stream(
+                    Constants.MODULE_CONSTANTS)
+                    .map(Constants::getRealSwerveModuleIO)
+                    .toArray(SwerveModuleIO[]::new);
             swerveDriveIO = new SwerveDriveIOYaw(new AHRS(NavXComType.kMXP_SPI));
 
         }
@@ -149,11 +149,11 @@ public class RobotContainer {
         // 4200 rpm = 8.763125m/s          = 24 ft += 1 ft
         // 3500 rpm = 7.7894m/s            =xxxx 20 ft += 2 in
 
-        // turret.setDefaultCommand(turret.runTurretMotor(controls.runTurretPID()));
         // controls.runFeeder().whileTrue(feeder.runFeederMotor(()-> .5));
-        // controls.runIndexer().whileTrue(indexer.runIndexMotor(()->.3));
-
-                // turret.setDefaultCommand(turret.runDumn(controls.runTurretPID()));
+        controls.runIndexer().whileTrue(indexer.runIndexMotor(()->.3));
+        
+        // turret.setDefaultCommand(turret.runTurretMotor(controls.runTurretPID()));
+        // turret.setDefaultCommand(turret.runDumn(controls.runTurretPID()));
 
         controls.runIntake().whileTrue(intake.runIntakeMotor(() -> -1));
         controls.runIntakePiston().toggleOnTrue(intake.sendIntakeOut()); // first
