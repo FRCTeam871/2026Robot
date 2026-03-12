@@ -237,12 +237,12 @@ public class SwerveDrive extends SubsystemBase {
     @AutoLogOutput(key = "Drive/EstimatedPose")
     public Pose2d getEstimatedPose() {
         // TODO: restore
-        // return poseEstimator.getEstimatedPosition();
-        Pose2d DUMMY = new Pose2d(
-                Constants.HUB_POSITION
-                        .minus(new Translation2d(Units.Inches.of(79 + (27 / 2) + (47 / 2)), Units.Inches.of(0))),
-                new Rotation2d(Units.Degrees.of(
-                        0)));
+        return poseEstimator.getEstimatedPosition();
+        // Pose2d DUMMY = new Pose2d(
+        //         Constants.HUB_POSITION
+        //                 .minus(new Translation2d(Units.Inches.of(79 + (27 / 2) + (47 / 2)), Units.Inches.of(0))),
+        //         new Rotation2d(Units.Degrees.of(
+        //                 0)));
         // Pose2d DUMMY = new Pose2d(
         // Constants.HUB_POSITION
         //         .minus(new Translation2d(Units.Inches.of(50 + (27 / 2) + (47 / 2)),
@@ -260,7 +260,7 @@ public class SwerveDrive extends SubsystemBase {
         //                 .plus(new Translation2d(Units.Inches.of(79 + (27 / 2) + (47 / 2)), Units.Inches.of(60))),
         //         new Rotation2d(Units.Degrees.of(
         //                 0)));
-        return DUMMY;
+        // return DUMMY;
     }
 
     public double getYawRate() {

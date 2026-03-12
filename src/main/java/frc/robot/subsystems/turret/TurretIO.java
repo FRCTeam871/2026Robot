@@ -20,4 +20,7 @@ public interface TurretIO {
 
     default void setTarget(Angle angle) {
     }
+
+    default void runDumn(double speed){
+    }
 }

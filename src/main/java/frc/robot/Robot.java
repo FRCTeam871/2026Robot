@@ -11,7 +11,10 @@ import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.turret.TurretIO;
@@ -22,16 +25,18 @@ public class Robot extends LoggedRobot {
     private final RobotContainer m_robotContainer;
 
     public Robot() {
-        Logger.recordMetadata("ProjectName", "MyProject"); // Set a metadata value
+        // LiveWindow.disableAllTelemetry();
+        // DriverStation.silenceJoystickConnectionWarning(true); // no more joystick warning
+        // CameraServer.startAutomaticCapture();
 
-        if (isReal()  /* is it real */) {                 
+        Logger.recordMetadata("ProjectName", "2026RobotCode"); // Set a metadata value
+
+        if (isReal() /* is it real */) {
             Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
             Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
-        }
-        else if (!Constants.shouldReplay) {
-            Logger.addDataReceiver(new NT4Publisher());            
-        } 
-        else {
+        } else if (!Constants.shouldReplay) {
+            Logger.addDataReceiver(new NT4Publisher());
+        } else {
             setUseTiming(false); // Run as fast as possible
             String logPath = LogFileUtil.findReplayLog(); // Pull the replay log from AdvantageScope (or prompt the user)
             Logger.setReplaySource(new WPILOGReader(logPath)); // Read replay log
@@ -49,6 +54,7 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void disabledInit() {
+        m_robotContainer.disabledInit();
     }
 
     @Override
@@ -86,6 +92,7 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void teleopExit() {
+        m_robotContainer.teleopExit();
     }
 
     @Override

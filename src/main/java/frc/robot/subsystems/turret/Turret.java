@@ -96,4 +96,12 @@ public class Turret extends SubsystemBase {
             io.setTarget(Units.Degrees.of(0));
         });
     }
+   public Command runDumn(DoubleSupplier speed) {
+        return run(() -> {
+            io.runDumn(speed.getAsDouble());
+        }).finallyDo(() -> {
+            io.runDumn(0);
+        });
+    }
+    
 }

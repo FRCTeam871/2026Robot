@@ -95,7 +95,7 @@ public class RobotContainer {
         }
 
         if (RobotBase.isReal()) { // is it real?
-            // fieldTrackingIO = new FieldTrackingIOLimeLight();
+            fieldTrackingIO = new FieldTrackingIOLimeLight();
             shooterIO = new ShooterIOReal();
             indexerIO = new IndexerIOReal();
             turretIO = new TurretIOReal();
@@ -105,7 +105,7 @@ public class RobotContainer {
             //         Constants.MODULE_CONSTANTS)
             //         .map(Constants::getRealSwerveModuleIO)
             //         .toArray(SwerveModuleIO[]::new);
-            // swerveDriveIO = new SwerveDriveIOYaw(new AHRS(NavXComType.kMXP_SPI));
+            swerveDriveIO = new SwerveDriveIOYaw(new AHRS(NavXComType.kMXP_SPI));
 
         }
         final SwerveModuleIO[] moduleIOsFinal = moduleIOs;
@@ -128,6 +128,9 @@ public class RobotContainer {
         aiming = new Aiming(turret, shooter, fieldTracking, swerveDrive, sequencing);
         autonomousPlanner = new AutonomousPlanner(intake, swerveDrive, fieldTracking, aiming);
         configureBindings();
+        Commands.runOnce(() -> {
+            fieldTracking.clip(15);
+        });
     }
 
     private void configureBindings() {
@@ -147,24 +150,25 @@ public class RobotContainer {
         // 3500 rpm = 7.7894m/s            =xxxx 20 ft += 2 in
 
         // turret.setDefaultCommand(turret.runTurretMotor(controls.runTurretPID()));
-        controls.runFeeder().whileTrue(feeder.runFeederMotor(()-> .5));
+        // controls.runFeeder().whileTrue(feeder.runFeederMotor(()-> .5));
+        // controls.runIndexer().whileTrue(indexer.runIndexMotor(()->.3));
 
-        controls.runIndexer().whileTrue(indexer.runIndexMotor(()->.3));
+                // turret.setDefaultCommand(turret.runDumn(controls.runTurretPID()));
 
-        controls.runIntake().whileTrue(intake.runIntakeMotor(() -> -.5));
+        controls.runIntake().whileTrue(intake.runIntakeMotor(() -> -1));
         controls.runIntakePiston().toggleOnTrue(intake.sendIntakeOut()); // first
 
         controls.runSequence().whileTrue(sequencing.shooterCommand(() -> Units.RPM.of(2000)));
 
         controls.shoot().whileTrue(aiming.shootTrue());
 
-        // controls.compressorToggle().onTrue(Commands.runOnce(() -> {
-        //     if (compressor.isEnabled()) {
-        //         compressor.disable();
-        //     } else {
-        //         compressor.enableDigital();
-        //     }
-        // }));
+        controls.compressorToggle().onTrue(Commands.runOnce(() -> {
+            if (compressor.isEnabled()) {
+                compressor.disable();
+            } else {
+                compressor.enableDigital();
+            }
+        }));
     }
 
     public Command getAutonomousCommand() {
@@ -192,6 +196,21 @@ public class RobotContainer {
                 controls.forwardsAndBackAxis(),
                 controls.sideToSideAxis(),
                 controls.driveRotation()));
+        fieldTracking.setCameraIMUMode(IMUMode.InternalExternalAssist);
+        fieldTracking.setThrottle(0);
+        fieldTracking.setIMUAssistAlpha(.005);
+
+    }
+
+    public void teleopExit() {
+        fieldTracking.clip(165);
+    }
+
+    public void disabledInit() {
+        // fieldTracking.setCameraIMUMode(IMUMode.InternalMT1Assist);
+        fieldTracking.setCameraIMUMode(IMUMode.InternalExternalAssist);
+        fieldTracking.setThrottle(30);
+        fieldTracking.setIMUAssistAlpha(.1);
 
     }
 }

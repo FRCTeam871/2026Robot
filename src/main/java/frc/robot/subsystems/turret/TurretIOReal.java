@@ -92,14 +92,21 @@ public class TurretIOReal implements TurretIO {
 
     @Override
     public void updateInputs(TurretIOInputs inputs) { // function that updates the input values located in inputs
-        inputs.setpointAngle = Units.Rotations.of(m_TurretMotorController.getSetpoint());
+        inputs.setpointAngle = Units.Degree.of(m_TurretMotorController.getSetpoint() - turretZero);
         inputs.turretAngle = Units.Degree.of(m_Turret_Encoder.getPosition() - turretZero);
         Logger.recordOutput("Turret/Angle", inputs.turretAngle);
     }
 
     @Override
     public void setTarget(Angle angle) {
-        m_TurretMotorController.setSetpoint(angle.in(Units.Degree) + turretZero, ControlType.kMAXMotionPositionControl,
+        double angl = angle.in(Units.Degree) + turretZero;
+        Logger.recordOutput("Turret/rawSetpoint", angl);
+        m_TurretMotorController.setSetpoint(angl, ControlType.kMAXMotionPositionControl,
                 ClosedLoopSlot.kSlot1);
+    }
+
+    @Override
+    public void runDumn(double speed) {
+        turretMotor.set(speed);
     }
 }

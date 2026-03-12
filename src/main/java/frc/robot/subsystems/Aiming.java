@@ -67,7 +67,7 @@ public class Aiming extends SubsystemBase {
                 Units.Feet.of(6));
         leftSideShootBlue = new Translation3d(Units.Inches.of(79.3), Units.Inches.of(238.275), Units.Inches.of(0.0));
         rightSideShootBlue = new Translation3d(Units.Inches.of(79.3), Units.Inches.of(79.425), Units.Inches.of(0.0));
-        setDefaultCommand(findSpeed().alongWith(fire()));
+        setDefaultCommand(findSpeed().alongWith(fire()).ignoringDisable(true));
     }
 
     @Override
@@ -138,12 +138,12 @@ public class Aiming extends SubsystemBase {
                         desiredShootSpeed.orElse(Units.MetersPerSecond.of(0)));
                 return;
             }
-
+            
         });
     }
 
     private Command fire() {
-        Command doShoot = sequencing.shooterCommand(() -> shooter.convertShootSpeedToRPM(desiredShootSpeed.get()));
+        Command doShoot = sequencing.shooterCommand(() -> shooter.convertShootSpeedToRPM(desiredShootSpeed.get())).until(()-> desiredShootSpeed.isEmpty());  
 
         return Commands.run(() -> {
             Logger.recordOutput("Aiming/doShoot", doShoot.isScheduled());
@@ -152,13 +152,7 @@ public class Aiming extends SubsystemBase {
                 if (!doShoot.isScheduled()) {
                     CommandScheduler.getInstance().schedule(doShoot);
                 }
-            } else {
-                // stop command if running
-                if (doShoot.isScheduled()) {
-                    CommandScheduler.getInstance().cancel(doShoot);
-                }
-                //TODO: change way of canceling as it crashes when release of button
-            }
+            } 
         });
     }
 

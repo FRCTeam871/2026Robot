@@ -20,30 +20,50 @@ public class XboxControls implements IControls {
     public DoubleSupplier forwardsAndBackAxis() {
         return () -> Constants.deadbandAndExponential(-driveXboxController.getLeftY());
     }
-
+    
     @Override
     public DoubleSupplier sideToSideAxis() {
         return () -> Constants.deadbandAndExponential(-driveXboxController.getLeftX());
     }
-
+    
     @Override
     public DoubleSupplier driveRotation() {
         return () -> Constants.deadbandAndExponential(-driveXboxController.getRightX()) * .6;
     }
+    
+    @Override
+    public Trigger shoot() {
+        return driveXboxController.rightBumper();
+    }
 
+    @Override
+    public Trigger runIntake() {
+        return driveXboxController.leftBumper(); // hold
+    }
+    
+    @Override
+    public Trigger runSequence() {
+        return driveXboxController.b(); // hold
+    }
+    
+    @Override
+    public Trigger runIntakePiston() {
+        return driveXboxController.a();
+    }
+    
+    @Override
+    public Trigger compressorToggle() {
+        return driveXboxController.back();
+    }
+    
     @Override
     public DoubleSupplier runTurret() {
         return () -> driveXboxController.getRightTriggerAxis();
     }
-
+    
     @Override
     public Trigger FIREEEEEEEEEEEEEEEEE() {
         return driveXboxController.x();
-    }
-
-    @Override
-    public Trigger compressorToggle() {
-        return driveXboxController.back();
     }
 
     @Override
@@ -53,7 +73,7 @@ public class XboxControls implements IControls {
 
     @Override
     public Trigger fireLowPID() {
-        return driveXboxController.back();
+        return driveXboxController.start();
     }
 
     @Override
@@ -71,25 +91,7 @@ public class XboxControls implements IControls {
         return driveXboxController.povRight();
     }
 
-    @Override
-    public Trigger runIntake() {
-        return driveXboxController.leftBumper(); // hold
-    }
 
-    @Override
-    public Trigger runIntakePiston() {
-        return driveXboxController.a();
-    }
-
-    @Override
-    public Trigger runSequence() {
-        return driveXboxController.b(); // hold
-    }
-
-    @Override
-    public Trigger shoot() {
-        return driveXboxController.rightBumper();
-    }
 
     @Override
     public DoubleSupplier runTurretPID() {
