@@ -99,7 +99,9 @@ public class TurretIOReal implements TurretIO {
 
     @Override
     public void setTarget(Angle angle) {
+        // TODO: wrap angle param if < -180 or > 180
         double angl = angle.in(Units.Degree) + turretZero;
+        // TODO: clamp raw setpoint within soft limits
         Logger.recordOutput("Turret/rawSetpoint", angl);
         m_TurretMotorController.setSetpoint(angl, ControlType.kMAXMotionPositionControl,
                 ClosedLoopSlot.kSlot1);
