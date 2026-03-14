@@ -1,10 +1,13 @@
 package frc.robot.subsystems.turret;
 
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.Rotations;
 
 import org.littletonrobotics.junction.Logger;
 
 import com.revrobotics.PersistMode;
+import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.ClosedLoopSlot;
@@ -17,6 +20,8 @@ import com.revrobotics.spark.config.SoftLimitConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.units.Unit;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.AnalogEncoder;
@@ -31,6 +36,7 @@ public class TurretIOReal implements TurretIO {
     private final SparkAnalogSensor m_Turret_Encoder;
     private SparkClosedLoopController m_TurretMotorController;
     private final double turretZero = 192.111;
+    private REVLibError lastErr;
 
     public TurretIOReal() {
         this.turretMotor = new SparkMax(44, MotorType.kBrushless);
@@ -39,7 +45,7 @@ public class TurretIOReal implements TurretIO {
 
         this.config = new SparkMaxConfig();
         // TODO: why are these numbers so big?
-        updatePIDConstants(0.005, 0, 0.0, 0, 0, 0, 100000, 200000, 20000000);
+        updatePIDConstants(0.02, 0, 0.0, 0, 0, 0, 60*60, 180*60, 720);
         SmartDashboard.putData(applyPIDConstants());
         config.apply(new SoftLimitConfig().forwardSoftLimitEnabled(true).reverseSoftLimitEnabled(true)
                 .reverseSoftLimit(-68 + turretZero).forwardSoftLimit(90 + turretZero)); // checks if the angle of the turret is what we set it in
@@ -47,6 +53,9 @@ public class TurretIOReal implements TurretIO {
                 .velocityConversionFactor(Constants.TURRETCONVERSIONFACTOR));
         config.apply(config.inverted(true));
         turretMotor.configure(config, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+        Logger.recordOutput("Turret/reverseSoftLimit", -68 + turretZero);
+        Logger.recordOutput("Turret/forwardSoftLimit", 90 + turretZero);
+
     }
 
     public void updatePIDConstants(double kP, double kI, double kD, double kS, double kV, double kA,
@@ -94,17 +103,27 @@ public class TurretIOReal implements TurretIO {
     public void updateInputs(TurretIOInputs inputs) { // function that updates the input values located in inputs
         inputs.setpointAngle = Units.Degree.of(m_TurretMotorController.getSetpoint() - turretZero);
         inputs.turretAngle = Units.Degree.of(m_Turret_Encoder.getPosition() - turretZero);
+        inputs.softForwardLimit = turretMotor.getForwardSoftLimit().isReached();
+        inputs.softReverseLimit = turretMotor.getReverseSoftLimit().isReached();
         Logger.recordOutput("Turret/Angle", inputs.turretAngle);
+        Logger.recordOutput("Turret/rawTurretAngle", m_Turret_Encoder.getPosition());
+        Logger.recordOutput("Turret/SoftFowardLimitReached", turretMotor.getForwardSoftLimit().isReached());
+        Logger.recordOutput("Turret/SoftReverseLimitReached", turretMotor.getReverseSoftLimit().isReached());
+        Logger.recordOutput("Turret/turretSpeed", m_Turret_Encoder.getVelocity());
     }
 
     @Override
-    public void setTarget(Angle angle) {
-        // TODO: wrap angle param if < -180 or > 180
-        double angl = angle.in(Units.Degree) + turretZero;
+    public void setTarget(Angle inputAngle) {
+        Angle result = Units.Radians.of(MathUtil.angleModulus(inputAngle.in(Radians)));
+        result = result.plus(Units.Degrees.of(turretZero));
         // TODO: clamp raw setpoint within soft limits
-        Logger.recordOutput("Turret/rawSetpoint", angl);
-        m_TurretMotorController.setSetpoint(angl, ControlType.kMAXMotionPositionControl,
+        Logger.recordOutput("Turret/rawSetpoint", result.in(Degrees));
+        final REVLibError err = m_TurretMotorController.setSetpoint(result.in(Degrees), ControlType.kPosition,
                 ClosedLoopSlot.kSlot1);
+        if (err != lastErr) {
+            System.out.println("Status Change: " + err);
+            this.lastErr = err;
+        }
     }
 
     @Override

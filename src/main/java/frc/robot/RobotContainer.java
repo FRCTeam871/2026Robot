@@ -85,7 +85,7 @@ public class RobotContainer {
         IntakeIO intakeIO = IntakeIO.EMPTY;
         SwerveModuleIO[] moduleIOs = Collections.nCopies(4, SwerveModuleIO.EMPTY).toArray(SwerveModuleIO[]::new);
         SwerveDriveIO swerveDriveIO = SwerveDriveIO.EMPTY;
-        //compressor = new Compressor(1, PneumaticsModuleType.CTREPCM);
+        compressor = new Compressor(0, PneumaticsModuleType.CTREPCM);
         this.controls = new XboxControls();
 
         if (RobotBase.isSimulation() && Constants.shouldReplay) { // is the world a simulation?
@@ -98,7 +98,7 @@ public class RobotContainer {
             fieldTrackingIO = new FieldTrackingIOLimeLight();
             shooterIO = new ShooterIOReal();
             indexerIO = new IndexerIOReal();
-            // turretIO = new TurretIOReal();
+            turretIO = new TurretIOReal();
             intakeIO = new IntakeIOReal();
             feederIO = new FeederIOReal();
             moduleIOs = Arrays.stream(

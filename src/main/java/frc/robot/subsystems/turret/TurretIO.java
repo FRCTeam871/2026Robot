@@ -13,6 +13,8 @@ public interface TurretIO {
     public class TurretIOInputs {
         Angle turretAngle = Units.Degrees.of(0);
         Angle setpointAngle = Units.Degrees.of(0);
+        boolean softForwardLimit = false;
+        boolean softReverseLimit = false;
     }
 
     default void updateInputs(TurretIOInputs inputs) {
@@ -21,6 +23,6 @@ public interface TurretIO {
     default void setTarget(Angle angle) {
     }
 
-    default void runDumn(double speed){
+    default void runDumn(double speed) {
     }
 }

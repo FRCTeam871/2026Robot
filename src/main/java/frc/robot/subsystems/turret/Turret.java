@@ -91,7 +91,7 @@ public class Turret extends SubsystemBase {
 
     public Command runTurretMotor(DoubleSupplier angle) {
         return run(() -> {
-            io.setTarget(Units.Degrees.of(angle.getAsDouble() * 90));
+            io.setTarget(Units.Degrees.of(angle.getAsDouble() * 120));
         }).finallyDo(() -> {
             io.setTarget(Units.Degrees.of(0));
         });
