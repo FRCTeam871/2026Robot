@@ -138,8 +138,8 @@ public class RobotContainer {
         new EventTrigger("Intake").whileTrue(intake.runIntakeMotor(() -> Constants.ocIntakeMotorSpeed));
         // controls.FIREEEEEEEEEEEEEEEEE().whileTrue(shooter.runMotorSpeed(.15));
         // controls.fiREEEE().whileTrue(shooter.runMotorSpeed(.3));
-        controls.fireLowPID().whileTrue(shooter.holdMotorSetpoint(Units.RPM.of(1100)));
-        controls.fireHighPID().whileTrue(shooter.holdMotorSetpoint(Units.RPM.of(5600)));
+        controls.fireLowPID().whileTrue(shooter.holdMotorSetpoint(Units.RPM.of(1500)));
+        controls.fireHighPID().whileTrue(sequencing.shooterCommand(() -> Units.RPM.of(1500)));
 
         // controls.fireHighPID().whileTrue(shooter.quasiStatic(edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction.kForward));
         // controls.fireLowPID().whileTrue(shooter.quasiStatic(edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction.kReverse));
@@ -158,7 +158,7 @@ public class RobotContainer {
         controls.runIntake().whileTrue(intake.runIntakeMotor(() -> -1));
         controls.runIntakePiston().toggleOnTrue(intake.sendIntakeOut()); // first
 
-        controls.runSequence().whileTrue(sequencing.shooterCommand(() -> Units.RPM.of(2000)));
+        controls.runSequence().whileTrue(sequencing.shooterCommand(() -> Units.RPM.of(2500)));
 
         controls.shoot().whileTrue(aiming.shootTrue());
 

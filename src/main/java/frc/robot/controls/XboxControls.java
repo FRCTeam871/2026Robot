@@ -73,7 +73,7 @@ public class XboxControls implements IControls {
 
     @Override
     public Trigger fireLowPID() {
-        return driveXboxController.start();
+        return driveXboxController.povLeft();
     }
 
     @Override

@@ -84,7 +84,7 @@ public class ShooterIOReal implements ShooterIO {
 
     }
     public boolean isRoughlyAtSetpoint(double setpoint){
-            return Math.abs(m_shooterEncoder.getVelocity() - setpoint) < 150;
+            return Math.abs(m_shooterEncoder.getVelocity() - setpoint) < 250;
     }
 
     public Command applyPIDConstants() {

@@ -41,7 +41,7 @@ public class Turret extends SubsystemBase {
                 Units.Inches.of(7),
                 new Rotation3d(
                         Units.Degrees.of(0),
-                        Units.Degrees.of(-52.5),
+                        Units.Degrees.of(-51),
                         Units.Degrees.of(0)));
         return currentTurretPose().plus(fuelReleasePoseRelative);
     }
@@ -53,7 +53,7 @@ public class Turret extends SubsystemBase {
                 Units.Inches.of(7),
                 new Rotation3d(
                         Units.Degrees.of(0),
-                        Units.Degrees.of(-52.5),
+                        Units.Degrees.of(-51),
                         Units.Degrees.of(0)));
         return targetTurretPose().plus(fuelReleasePoseRelative);
     }

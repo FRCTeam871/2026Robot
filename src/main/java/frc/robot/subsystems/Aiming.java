@@ -143,7 +143,9 @@ public class Aiming extends SubsystemBase {
     }
 
     private Command fire() {
-        Command doShoot = sequencing.shooterCommand(() -> shooter.convertShootSpeedToRPM(desiredShootSpeed.get())).until(()-> desiredShootSpeed.isEmpty());  
+        Command doShoot = sequencing.shooterCommand(() -> 
+            shooter.convertShootSpeedToRPM(desiredShootSpeed.orElse(Units.MetersPerSecond.of(0))))
+            .until(()-> desiredShootSpeed.isEmpty());  
 
         return Commands.run(() -> {
             Logger.recordOutput("Aiming/doShoot", doShoot.isScheduled());

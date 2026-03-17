@@ -38,7 +38,7 @@ public final class Constants {
     public static final boolean shouldReplay = false;
     public static final LinearAcceleration GRAVITY = Units.MetersPerSecondPerSecond.of(-9.81);
     public static final Dimensionless SPEEDTRANSFERPERCENT = Units.Percent
-            .of(3.86); /* TODO: Change Later update experimentally */
+            .of(4.2); /* TODO: Change Later update experimentally */
     public static final Distance SHOOTERWHEELRADIUS = Units.Inches.of(2);
     public static final Frequency FIRERATE = Units.Hertz.of(7);
     public static final double ocIntakeMotorSpeed = 1.0;

@@ -185,9 +185,9 @@ public class SwerveDrive extends SubsystemBase {
         sideRateLimiter.setRate(multiplerRateLimit);
         rotationRateLimiter.setRate(rotationRateLimit);
 
-        speeds.vxMetersPerSecond = forwardRateLimiter.calculate(speeds.vxMetersPerSecond);
-        speeds.vyMetersPerSecond = sideRateLimiter.calculate(speeds.vyMetersPerSecond);
-        speeds.omegaRadiansPerSecond = rotationRateLimiter.calculate(speeds.omegaRadiansPerSecond);
+        // speeds.vxMetersPerSecond = forwardRateLimiter.calculate(speeds.vxMetersPerSecond);
+        // speeds.vyMetersPerSecond = sideRateLimiter.calculate(speeds.vyMetersPerSecond);
+        // speeds.omegaRadiansPerSecond = rotationRateLimiter.calculate(speeds.omegaRadiansPerSecond);
 
         // strat 1
         double speedMultiplier = 1;

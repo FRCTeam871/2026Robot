@@ -55,8 +55,6 @@ public class Shooter extends SubsystemBase {
     public AngularVelocity convertShootSpeedToRPM(LinearVelocity shootSpeed) {
         AngularVelocity desiredRPM = Units.RPM.of(
                 (shootSpeed.div(Constants.SPEEDTRANSFERPERCENT)).div(Constants.SHOOTERWHEELRADIUS).baseUnitMagnitude());
-        System.out.println(desiredRPM.in(RPM));
-        System.out.println(shootSpeed.in(MetersPerSecond));
         return desiredRPM;
     }
 
