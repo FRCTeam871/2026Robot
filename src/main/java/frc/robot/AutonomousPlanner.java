@@ -50,7 +50,6 @@ public class AutonomousPlanner {
         OutpostCollect,
         GroundCollect;
 
-       //TODO: make more actions
         public boolean canDoAction(FieldPosition position) {
             if (this == None) {
                 return true;

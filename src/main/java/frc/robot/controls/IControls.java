@@ -5,6 +5,8 @@ import java.util.function.DoubleSupplier;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public interface IControls {
+    public boolean isOk();
+
     // positive is forwards
     public DoubleSupplier forwardsAndBackAxis();
 
@@ -39,4 +41,8 @@ public interface IControls {
     public Trigger shoot();
 
     public DoubleSupplier runTurretPID();
+
+    public Trigger resetGyro();
+
+    public Trigger regurgitate();
 }

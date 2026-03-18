@@ -236,7 +236,6 @@ public class SwerveDrive extends SubsystemBase {
 
     @AutoLogOutput(key = "Drive/EstimatedPose")
     public Pose2d getEstimatedPose() {
-        // TODO: restore
         return poseEstimator.getEstimatedPosition();
         // Pose2d DUMMY = new Pose2d(
         //         Constants.HUB_POSITION

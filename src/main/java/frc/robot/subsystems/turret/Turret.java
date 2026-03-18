@@ -32,7 +32,13 @@ public class Turret extends SubsystemBase {
         io.updateInputs(inputs);
     }
 
-    // TODO: final coordinates
+    public boolean isConnected() {
+        return inputs.isConnected;
+    }
+
+    public boolean isInStartPose() {
+        return inputs.turretAngle.isNear(Units.Degrees.of(0), 10);
+    }
 
     public Pose3d currentPoseOfFuelRelease() {
         Transform3d fuelReleasePoseRelative = new Transform3d(
@@ -96,12 +102,13 @@ public class Turret extends SubsystemBase {
             io.setTarget(Units.Degrees.of(0));
         });
     }
-   public Command runDumn(DoubleSupplier speed) {
+
+    public Command runDumn(DoubleSupplier speed) {
         return run(() -> {
             io.runDumn(speed.getAsDouble());
         }).finallyDo(() -> {
             io.runDumn(0);
         });
     }
-    
+
 }

@@ -23,9 +23,14 @@ import com.studica.frc.AHRS.NavXComType;
 
 import edu.wpi.first.hal.SimDevice.Direction;
 import edu.wpi.first.units.Units;
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -138,8 +143,8 @@ public class RobotContainer {
         new EventTrigger("Intake").whileTrue(intake.runIntakeMotor(() -> Constants.ocIntakeMotorSpeed));
         // controls.FIREEEEEEEEEEEEEEEEE().whileTrue(shooter.runMotorSpeed(.15));
         // controls.fiREEEE().whileTrue(shooter.runMotorSpeed(.3));
-        controls.fireLowPID().whileTrue(shooter.holdMotorSetpoint(Units.RPM.of(1500)));
-        controls.fireHighPID().whileTrue(sequencing.shooterCommand(() -> Units.RPM.of(1500)));
+        // controls.fireLowPID().whileTrue(shooter.holdMotorSetpoint(Units.RPM.of(1500)));
+        // controls.fireHighPID().whileTrue(sequencing.shooterCommand(() -> Units.RPM.of(1500)));
 
         // controls.fireHighPID().whileTrue(shooter.quasiStatic(edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction.kForward));
         // controls.fireLowPID().whileTrue(shooter.quasiStatic(edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction.kReverse));
@@ -150,17 +155,22 @@ public class RobotContainer {
         // 3500 rpm = 7.7894m/s            =xxxx 20 ft += 2 in
 
         // controls.runFeeder().whileTrue(feeder.runFeederMotor(()-> .5));
-        controls.runIndexer().whileTrue(indexer.runIndexMotor(()->.3));
-        
+        // controls.runIndexer().whileTrue(indexer.runIndexMotor(()->.3));
+
         // turret.setDefaultCommand(turret.runTurretMotor(controls.runTurretPID()));
         // turret.setDefaultCommand(turret.runDumn(controls.runTurretPID()));
 
+        controls.runIntakePiston().toggleOnTrue(intake.sendIntakeIn()); // first
         controls.runIntake().whileTrue(intake.runIntakeMotor(() -> -1));
-        controls.runIntakePiston().toggleOnTrue(intake.sendIntakeOut()); // first
+        controls.regurgitate().whileTrue(intake.runIntakeMotor(() -> 1));
 
-        controls.runSequence().whileTrue(sequencing.shooterCommand(() -> Units.RPM.of(2500)));
+        // controls.runSequence().whileTrue(sequencing.shooterCommand(() -> Units.RPM.of(2500)));
 
         controls.shoot().whileTrue(aiming.shootTrue());
+
+        controls.resetGyro().onTrue(Commands.runOnce(() -> {
+            swerveDrive.setCurrentAngle(DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red ? 180 : 0);
+        }));
 
         controls.compressorToggle().onTrue(Commands.runOnce(() -> {
             if (compressor.isEnabled()) {
@@ -199,7 +209,7 @@ public class RobotContainer {
         fieldTracking.setCameraIMUMode(IMUMode.InternalExternalAssist);
         fieldTracking.setThrottle(0);
         fieldTracking.setIMUAssistAlpha(.005);
-
+        intake.setIntakeOut(true);
     }
 
     public void teleopExit() {
@@ -212,5 +222,39 @@ public class RobotContainer {
         fieldTracking.setThrottle(30);
         fieldTracking.setIMUAssistAlpha(.1);
 
+    }
+
+    public void disabledPeriodic() {
+        isReadyForMatch();
+    }
+
+    Alert limeLightAprilTag = new Alert("Limelight not have april tag", AlertType.kError);
+
+    Alert limeLightOn = new Alert("LimeLight not on", AlertType.kError);
+
+    Alert lowBattery = new Alert("Low Battery", AlertType.kError);
+
+    Alert noControllerPresent = new Alert("There is no controller connected", AlertType.kError);
+
+    Alert susTurretAngle = new Alert("Bad Turret Angle", AlertType.kError);
+
+    Alert turretNotInStartPose = new Alert("Turret Angle wrong", AlertType.kError);
+
+    public boolean isReadyForMatch() {
+        boolean ok = true;
+
+        limeLightAprilTag.set(!fieldTracking.isAprilTagDetected());
+        limeLightOn.set(!fieldTracking.limeLightsOn());
+
+        lowBattery.set(RobotController.getBatteryVoltage() < 12);
+
+        noControllerPresent.set(!controls.isOk());
+
+        susTurretAngle.set(!turret.isConnected());
+        turretNotInStartPose.set(!turret.isInStartPose());
+
+        // starting pose
+
+        return ok;
     }
 }

@@ -15,6 +15,7 @@ public interface TurretIO {
         Angle setpointAngle = Units.Degrees.of(0);
         boolean softForwardLimit = false;
         boolean softReverseLimit = false;
+        boolean isConnected = false;
     }
 
     default void updateInputs(TurretIOInputs inputs) {

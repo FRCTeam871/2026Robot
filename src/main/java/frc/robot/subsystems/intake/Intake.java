@@ -25,8 +25,11 @@ public class Intake extends SubsystemBase {
         });
     }
 
-    public Command sendIntakeOut() {
-        return Commands.run(() -> io.setIntakeOut(true))
-                .finallyDo(canceled -> io.setIntakeOut(false));
+    public Command sendIntakeIn() {
+        return Commands.run(() -> io.setIntakeOut(false))
+                .finallyDo(canceled -> io.setIntakeOut(true));
+    }
+    public void setIntakeOut(boolean extend){
+        io.setIntakeOut(extend);
     }
 }

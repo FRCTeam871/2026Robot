@@ -32,6 +32,8 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants;
 
 public class TurretIOReal implements TurretIO {
+    private static final int FORWARD_LIMIT = 90;
+    private static final int REVERSE_LIMIT = -68;
     private final SparkMax turretMotor;
     private final SparkMaxConfig config;
     private final SparkAnalogSensor m_Turret_Encoder;
@@ -45,18 +47,16 @@ public class TurretIOReal implements TurretIO {
         this.m_TurretMotorController = turretMotor.getClosedLoopController();
 
         this.config = new SparkMaxConfig();
-        // TODO: why are these numbers so big?
         updatePIDConstants(0.02, 0, 0.0, 0, 0, 0, 60 * 60, 180 * 60, 720);
         SmartDashboard.putData(applyPIDConstants());
         config.apply(new SoftLimitConfig().forwardSoftLimitEnabled(true).reverseSoftLimitEnabled(true)
-                .reverseSoftLimit(-68 + turretZero).forwardSoftLimit(90 + turretZero)); // checks if the angle of the turret is what we set it in
+                .reverseSoftLimit(REVERSE_LIMIT + turretZero).forwardSoftLimit(FORWARD_LIMIT + turretZero)); // checks if the angle of the turret is what we set it in
         config.apply(config.analogSensor.positionConversionFactor(Constants.TURRETCONVERSIONFACTOR)
                 .velocityConversionFactor(Constants.TURRETCONVERSIONFACTOR));
         config.apply(config.inverted(true));
         turretMotor.configure(config, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
-        Logger.recordOutput("Turret/reverseSoftLimit", -68 + turretZero);
-        Logger.recordOutput("Turret/forwardSoftLimit", 90 + turretZero);
-
+        Logger.recordOutput("Turret/reverseSoftLimit", REVERSE_LIMIT + turretZero);
+        Logger.recordOutput("Turret/forwardSoftLimit", FORWARD_LIMIT + turretZero);
     }
 
     public void updatePIDConstants(double kP, double kI, double kD, double kS, double kV, double kA,
@@ -106,6 +106,7 @@ public class TurretIOReal implements TurretIO {
         inputs.turretAngle = Units.Degree.of(m_Turret_Encoder.getPosition() - turretZero);
         inputs.softForwardLimit = turretMotor.getForwardSoftLimit().isReached();
         inputs.softReverseLimit = turretMotor.getReverseSoftLimit().isReached();
+        inputs.isConnected = m_Turret_Encoder.getPosition() != 0;
         Logger.recordOutput("Turret/Angle", inputs.turretAngle);
         Logger.recordOutput("Turret/rawTurretAngle", m_Turret_Encoder.getPosition());
         Logger.recordOutput("Turret/SoftFowardLimitReached", turretMotor.getForwardSoftLimit().isReached());
@@ -116,8 +117,8 @@ public class TurretIOReal implements TurretIO {
     @Override
     public void setTarget(Angle inputAngle) {
         Angle result = Units.Radians.of(MathUtil.angleModulus(inputAngle.in(Radians)));
+        result = Units.Degrees.of(MathUtil.clamp(result.in(Degrees), REVERSE_LIMIT, FORWARD_LIMIT));
         result = result.plus(Units.Degrees.of(turretZero));
-        // TODO: clamp raw setpoint within soft limits
         Logger.recordOutput("Turret/rawSetpoint", result.in(Degrees));
         final REVLibError err = m_TurretMotorController.setSetpoint(result.in(Degrees), ControlType.kPosition,
                 ClosedLoopSlot.kSlot1);
