@@ -17,10 +17,10 @@ public class Feeder extends SubsystemBase {
     public Command runFeederMotor(DoubleSupplier speed) {
         return run(() -> {
             io.runFeederMotor(speed.getAsDouble());
-            Logger.recordOutput("Feeder/speed", speed);
+            // Logger.recordOutput("Feeder/speed", speed);
         }).finallyDo(() -> {
             io.runFeederMotor(0);
-            Logger.recordOutput("Feeder/speed", 0);
+            // Logger.recordOutput("Feeder/speed", 0);
         });
     }
 

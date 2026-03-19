@@ -65,7 +65,7 @@ public class ShooterIOReal implements ShooterIO {
         inputs.motorVoltage = Units.Volts.of(shooterMotor.getAppliedOutput() * shooterMotor.getBusVoltage());
         inputs.position = Units.Rotations.of(m_shooterEncoder.getPosition());
         inputs.isAtRPMSetpoint = isRoughlyAtSetpoint(m_shooterMotorController.getSetpoint());
-        Logger.recordOutput("isAtSetpoint",isRoughlyAtSetpoint(m_shooterMotorController.getSetpoint()));
+        // Logger.recordOutput("isAtSetpoint",isRoughlyAtSetpoint(m_shooterMotorController.getSetpoint()));
     }
 
     @Override

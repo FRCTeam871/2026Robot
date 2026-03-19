@@ -61,7 +61,7 @@ public final class Constants {
     public static final double LEVER_ARM_VAL = edu.wpi.first.math.util.Units
             .inchesToMeters(Constants.DISTANCE_BETWEEN_WHEELS) / 2;
 
-    public static final double DISTANCE_BETWEEN_WHEELS = 22.75; // inches
+    public static final double DISTANCE_BETWEEN_WHEELS = 21.75; // inches
     // INTAKE CONSTANTS
     public static final Time PISTON_THRESHOLD = Units.Second.of(1.0);
     public static final Time TARGET_DROP_THRESHOLD = Units.Second.of(0.5);

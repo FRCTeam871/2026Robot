@@ -18,6 +18,6 @@ public interface IntakeIO {
     }
 
     default void setIntakeOut(boolean extend) {
-        Logger.recordOutput("Intake/Piston", extend);
+        // Logger.recordOutput("Intake/Piston", extend);
     }
 }

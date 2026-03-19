@@ -111,7 +111,7 @@ public class TurretIOReal implements TurretIO {
         Logger.recordOutput("Turret/rawTurretAngle", m_Turret_Encoder.getPosition());
         Logger.recordOutput("Turret/SoftFowardLimitReached", turretMotor.getForwardSoftLimit().isReached());
         Logger.recordOutput("Turret/SoftReverseLimitReached", turretMotor.getReverseSoftLimit().isReached());
-        Logger.recordOutput("Turret/turretSpeed", m_Turret_Encoder.getVelocity());
+        // Logger.recordOutput("Turret/turretSpeed", m_Turret_Encoder.getVelocity());
     }
 
     @Override

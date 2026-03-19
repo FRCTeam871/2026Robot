@@ -78,10 +78,10 @@ public class Aiming extends SubsystemBase {
     public Command findSpeed() {
         return run(() -> {
             Logger.recordOutput("Aiming/RobotPose", swerveDrive.getEstimatedPose());
-            Logger.recordOutput("Aiming/TurretPose", turret.currentTurretPose());
-            Logger.recordOutput("Aiming/CurrentFuelReleasePose", turret.currentPoseOfFuelRelease());
-            Logger.recordOutput("Aiming/TargetTurretPose", turret.targetTurretPose());
-            Logger.recordOutput("Aiming/TargetPoseOfFuelRelease", turret.targetPoseOfFuelRelease());
+            // Logger.recordOutput("Aiming/TurretPose", turret.currentTurretPose());
+            // Logger.recordOutput("Aiming/CurrentFuelReleasePose", turret.currentPoseOfFuelRelease());
+            // Logger.recordOutput("Aiming/TargetTurretPose", turret.targetTurretPose());
+            // Logger.recordOutput("Aiming/TargetPoseOfFuelRelease", turret.targetPoseOfFuelRelease());
 
             Translation3d target = hubBlue;
             Translation3d turretTranslation = turret.currentTurretPose().getTranslation();
@@ -104,8 +104,8 @@ public class Aiming extends SubsystemBase {
 
             desiredShootSpeed = calculateLaunchSpeed(turret.targetPoseOfFuelRelease(), target);
 
-            Logger.recordOutput("Aiming/desiredShootSpeed", desiredShootSpeed.orElse(Units.MetersPerSecond.of(0)));
-            Logger.recordOutput("Aiming/realDesiredShootSpeed", desiredShootSpeed.orElse(Units.MetersPerSecond.of(0)));
+            // Logger.recordOutput("Aiming/desiredShootSpeed", desiredShootSpeed.orElse(Units.MetersPerSecond.of(0)));
+            // Logger.recordOutput("Aiming/realDesiredShootSpeed", desiredShootSpeed.orElse(Units.MetersPerSecond.of(0)));
 
             boolean isTrajectoryInvalid = desiredShootSpeed.isEmpty()
                     || desiredShootSpeed.get().gt(Units.MetersPerSecond.of(20))
@@ -120,10 +120,10 @@ public class Aiming extends SubsystemBase {
                 Translation3d[] fuelTrajectory;
                 fuelTrajectory = new Translation3d[0];
                 Logger.recordOutput("Aiming/TrajectoryPath", fuelTrajectory);
-                Logger.recordOutput("Aiming/InitialPose", turret.targetPoseOfFuelRelease());
+                // Logger.recordOutput("Aiming/InitialPose", turret.targetPoseOfFuelRelease());
                 desiredShootSpeed = Optional.empty();
-                Logger.recordOutput("Aiming/realDesiredShootSpeed",
-                        desiredShootSpeed.orElse(Units.MetersPerSecond.of(0)));
+                // Logger.recordOutput("Aiming/realDesiredShootSpeed",
+                        // desiredShootSpeed.orElse(Units.MetersPerSecond.of(0)));
                 return;
             }
 
@@ -134,8 +134,8 @@ public class Aiming extends SubsystemBase {
 
             if (!wantToShoot) {
                 desiredShootSpeed = Optional.empty();
-                Logger.recordOutput("Aiming/realDesiredShootSpeed",
-                        desiredShootSpeed.orElse(Units.MetersPerSecond.of(0)));
+                // Logger.recordOutput("Aiming/realDesiredShootSpeed",
+                //         desiredShootSpeed.orElse(Units.MetersPerSecond.of(0)));
                 return;
             }
             
@@ -148,7 +148,7 @@ public class Aiming extends SubsystemBase {
             .until(()-> desiredShootSpeed.isEmpty());  
 
         return Commands.run(() -> {
-            Logger.recordOutput("Aiming/doShoot", doShoot.isScheduled());
+            // Logger.recordOutput("Aiming/doShoot", doShoot.isScheduled());
             if (desiredShootSpeed.isPresent()) {
                 // start command if not running
                 if (!doShoot.isScheduled()) {

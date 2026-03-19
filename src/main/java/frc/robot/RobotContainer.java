@@ -133,9 +133,9 @@ public class RobotContainer {
         aiming = new Aiming(turret, shooter, fieldTracking, swerveDrive, sequencing);
         autonomousPlanner = new AutonomousPlanner(intake, swerveDrive, fieldTracking, aiming);
         configureBindings();
-        Commands.runOnce(() -> {
+        SmartDashboard.putData(Commands.runOnce(() -> {
             fieldTracking.clip(15);
-        });
+        }).ignoringDisable(true).withName("clip"));
     }
 
     private void configureBindings() {
@@ -189,7 +189,7 @@ public class RobotContainer {
         // fieldTracking.setCameraIMUMode(IMUMode.InternalExternalAssist);
         fieldTracking.setCameraIMUMode(IMUMode.ExternalOnly);
         fieldTracking.setThrottle(0);
-
+        intake.setIntakeOut(true);
         final Command autoCommand = getAutonomousCommand();
 
         if (autoCommand != null) {

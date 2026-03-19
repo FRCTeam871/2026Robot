@@ -67,8 +67,7 @@ public class Shooter extends SubsystemBase {
         return Units.MetersPerSecond.of(6.7);
     }
 
-    private void 
-    motorLogSetter(SysIdRoutineLog log) {
+    private void motorLogSetter(SysIdRoutineLog log) {
         log.motor("shooter-wheel")
                 .voltage(
                         m_appliedVoltage.mut_replace(
