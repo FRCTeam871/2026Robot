@@ -46,6 +46,7 @@ public class SwerveDrive extends SubsystemBase {
     private final SwerveDriveIO io;
     private final SwerveDriveIOInputsAutoLogged inputs = new SwerveDriveIOInputsAutoLogged();
     private RobotConfig config;
+    private boolean wiggle = false; 
     private ChangableSlewRateLimiter forwardRateLimiter;
     private ChangableSlewRateLimiter sideRateLimiter;
     private ChangableSlewRateLimiter rotationRateLimiter;
@@ -103,7 +104,11 @@ public class SwerveDrive extends SubsystemBase {
                     vLeft.getAsDouble() * Constants.MAX_SPEED_MPS,
                     omegarad.getAsDouble() * Constants.MAX_ROTATION_SPEED_RDPS);
 
+                    if(wiggle){
+                        chassisSpeeds.vyMetersPerSecond += Math.sin(Timer.getTimestamp()*Math.PI*8) * (Constants.MAX_SPEED_MPS*.2);
+                    }
                     Logger.recordOutput("Drive/targetSpeeds", chassisSpeeds);
+
             if (fieldOrientation) {
                 Rotation2d rotation = getEstimatedPose().getRotation();
                 if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red) {
@@ -112,6 +117,7 @@ public class SwerveDrive extends SubsystemBase {
                 chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(chassisSpeeds, rotation);
             }
 
+            
             // might not want to make this zero
             if (headingHoldEnabled && chassisSpeeds.omegaRadiansPerSecond == 0) {
                 final double yawout = yawPidController.calculate(
@@ -135,6 +141,10 @@ public class SwerveDrive extends SubsystemBase {
 
             updateSpeed(chassisSpeeds);
         });
+    }
+
+    public Command wiggle(){
+        return Commands.run(()-> wiggle = true).finallyDo(()-> wiggle = false);
     }
 
     @Override

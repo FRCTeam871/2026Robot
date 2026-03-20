@@ -97,7 +97,7 @@ public class Shooter extends SubsystemBase {
 
         }).finallyDo(() -> {
             io.runMotorSpeed(0);
-            Logger.recordOutput("rpmSetpoint", 0);
+            Logger.recordOutput("rpmSetpoint", 0.0);
         });
     }
 
@@ -109,7 +109,7 @@ public class Shooter extends SubsystemBase {
 
         }).finallyDo(() -> {
             io.runMotorSpeed(0);
-            Logger.recordOutput("rpmSetpoint", 0);
+            Logger.recordOutput("rpmSetpoint", 0.0);
         });
     }
 

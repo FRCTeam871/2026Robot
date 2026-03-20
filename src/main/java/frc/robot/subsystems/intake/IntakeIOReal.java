@@ -1,5 +1,7 @@
 package frc.robot.subsystems.intake;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
@@ -22,6 +24,7 @@ public class IntakeIOReal implements IntakeIO {
     @Override
     public void setSpeed(double speed) {
         intakeMotor.set(speed);
+        // Logger.recordOutput("Intake/intakeSpeed", speed);
     }
 
     @Override

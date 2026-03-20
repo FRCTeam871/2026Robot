@@ -41,7 +41,7 @@ public final class Constants {
             .of(4.35); 
     public static final Distance SHOOTERWHEELRADIUS = Units.Inches.of(2);
     public static final Frequency FIRERATE = Units.Hertz.of(7);
-    public static final double ocIntakeMotorSpeed = 1.0;
+    public static final double ocIntakeMotorSpeed = -1.0;
     //-------------------------------------------------------old
     public static final double SWERVE_STEER_KP = 2 / 360.0;
     public static final double SWERVE_STEER_KI = 0.000;

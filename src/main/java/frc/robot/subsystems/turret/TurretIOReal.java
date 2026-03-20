@@ -38,7 +38,7 @@ public class TurretIOReal implements TurretIO {
     private final SparkMaxConfig config;
     private final SparkAnalogSensor m_Turret_Encoder;
     private SparkClosedLoopController m_TurretMotorController;
-    private final double turretZero = 183.970;
+    private final double turretZero = 254.0 ;
     private REVLibError lastErr;
 
     public TurretIOReal() {

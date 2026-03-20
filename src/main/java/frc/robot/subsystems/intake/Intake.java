@@ -18,7 +18,7 @@ public class Intake extends SubsystemBase {
     }
 
     public Command runIntakeMotor(DoubleSupplier speed) {
-        return run(() -> {
+        return Commands.run(() -> {
             io.setSpeed(speed.getAsDouble());
         }).finallyDo(() -> {
             io.setSpeed(0);

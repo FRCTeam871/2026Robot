@@ -53,6 +53,7 @@ public class Aiming extends SubsystemBase {
     Translation3d hubBlue;
     Translation3d leftSideShootBlue;
     Translation3d rightSideShootBlue;
+    boolean manualAim = false;
 
     public Aiming(Turret turret, Shooter shooter, FieldTracking fieldtracking, SwerveDrive swerveDrive,
             Sequencing sequencing) {
@@ -68,7 +69,7 @@ public class Aiming extends SubsystemBase {
         leftSideShootBlue = new Translation3d(Units.Inches.of(79.3), Units.Inches.of(238.275), Units.Inches.of(0.0));
         rightSideShootBlue = new Translation3d(Units.Inches.of(79.3), Units.Inches.of(79.425), Units.Inches.of(0.0));
         setDefaultCommand(findSpeed().alongWith(fire()).ignoringDisable(true));
-    }
+        }
 
     @Override
     public void periodic() {
@@ -99,8 +100,12 @@ public class Aiming extends SubsystemBase {
                 target = new Translation3d(flipped.getX(), flipped.getY(), target.getZ());
             }
             Logger.recordOutput("Aiming/Target", target);
+            if(manualAim){
+                turret.setYawSetpoint(Units.Degrees.of(0));
+            } else{
             turret.setYawSetpoint(calculateAngle(turretTranslation, target)
                     .minus(swerveDrive.getEstimatedPose().getRotation().getMeasure()));
+            }
 
             desiredShootSpeed = calculateLaunchSpeed(turret.targetPoseOfFuelRelease(), target);
 
@@ -232,4 +237,9 @@ public class Aiming extends SubsystemBase {
 
         return initialPose.getTranslation().plus(xDirection.plus(yDirection));
     }
+      public Command manualTurret(){
+        return Commands.run(()-> manualAim = true).finallyDo(()-> manualAim = false);
+    }
+
 }
+

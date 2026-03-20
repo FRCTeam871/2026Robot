@@ -33,7 +33,7 @@ public class XboxControls implements IControls {
 
     @Override
     public DoubleSupplier driveRotation() {
-        return () -> Constants.deadbandAndExponential(-driveXboxController.getRightX()) * .6;
+        return () -> Constants.deadbandAndExponential(-driveXboxController.getRightX()) * .4;
     }
 
     @Override
@@ -109,5 +109,9 @@ public class XboxControls implements IControls {
     @Override
     public Trigger regurgitate() {
         return driveXboxController.x();
+    }
+    @Override
+    public Trigger turnOnManualAim() {
+        return driveXboxController.start();
     }
 }

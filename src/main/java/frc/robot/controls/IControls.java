@@ -45,4 +45,6 @@ public interface IControls {
     public Trigger resetGyro();
 
     public Trigger regurgitate();
+
+    public Trigger turnOnManualAim();
 }

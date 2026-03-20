@@ -113,6 +113,9 @@ public class RobotContainer {
             swerveDriveIO = new SwerveDriveIOYaw(new AHRS(NavXComType.kMXP_SPI));
 
         }
+        intake = new Intake(intakeIO);
+        new EventTrigger("Intake").whileTrue(intake.runIntakeMotor(() -> Constants.ocIntakeMotorSpeed));
+        // NamedCommands.registerCommand("Intake", intake.runIntakeMotor(()-> Constants.ocIntakeMotorSpeed));
         final SwerveModuleIO[] moduleIOsFinal = moduleIOs;
         final SwerveModule[] swerveModules = IntStream.range(0, moduleIOs.length)
                 .mapToObj(i -> {
@@ -126,7 +129,6 @@ public class RobotContainer {
         shooter = new Shooter(shooterIO);
         indexer = new Indexer(indexerIO);
         turret = new Turret(turretIO, swerveDrive);
-        intake = new Intake(intakeIO);
         feeder = new Feeder(feederIO);
         sequencing = new Sequencing(shooter, intake, indexer, feeder);
         fieldTracking = new FieldTracking(swerveDrive, fieldTrackingIO);
@@ -140,7 +142,6 @@ public class RobotContainer {
 
     private void configureBindings() {
 
-        new EventTrigger("Intake").whileTrue(intake.runIntakeMotor(() -> Constants.ocIntakeMotorSpeed));
         // controls.FIREEEEEEEEEEEEEEEEE().whileTrue(shooter.runMotorSpeed(.15));
         // controls.fiREEEE().whileTrue(shooter.runMotorSpeed(.3));
         // controls.fireLowPID().whileTrue(shooter.holdMotorSetpoint(Units.RPM.of(1500)));
@@ -166,7 +167,7 @@ public class RobotContainer {
 
         // controls.runSequence().whileTrue(sequencing.shooterCommand(() -> Units.RPM.of(2500)));
 
-        controls.shoot().whileTrue(aiming.shootTrue());
+        controls.shoot().whileTrue(aiming.shootTrue().alongWith(swerveDrive.wiggle()));
 
         controls.resetGyro().onTrue(Commands.runOnce(() -> {
             swerveDrive.setCurrentAngle(DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red ? 180 : 0);
@@ -179,15 +180,18 @@ public class RobotContainer {
                 compressor.enableDigital();
             }
         }));
+
+        controls.turnOnManualAim().toggleOnTrue(aiming.manualTurret());
     }
 
+  
     public Command getAutonomousCommand() {
         return autonomousPlanner.getAutonCommand();
     }
 
     public void autonomousInit() {
         // fieldTracking.setCameraIMUMode(IMUMode.InternalExternalAssist);
-        fieldTracking.setCameraIMUMode(IMUMode.ExternalOnly);
+        fieldTracking.setCameraIMUMode(IMUMode.ExternalReset);
         fieldTracking.setThrottle(0);
         intake.setIntakeOut(true);
         final Command autoCommand = getAutonomousCommand();
@@ -206,7 +210,7 @@ public class RobotContainer {
                 controls.forwardsAndBackAxis(),
                 controls.sideToSideAxis(),
                 controls.driveRotation()));
-        fieldTracking.setCameraIMUMode(IMUMode.InternalExternalAssist);
+        fieldTracking.setCameraIMUMode(IMUMode.ExternalReset);
         fieldTracking.setThrottle(0);
         fieldTracking.setIMUAssistAlpha(.005);
         intake.setIntakeOut(true);
@@ -218,7 +222,7 @@ public class RobotContainer {
 
     public void disabledInit() {
         // fieldTracking.setCameraIMUMode(IMUMode.InternalMT1Assist);
-        fieldTracking.setCameraIMUMode(IMUMode.InternalExternalAssist);
+        fieldTracking.setCameraIMUMode(IMUMode.ExternalReset);
         fieldTracking.setThrottle(30);
         fieldTracking.setIMUAssistAlpha(.1);
 
