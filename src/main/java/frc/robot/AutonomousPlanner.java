@@ -32,7 +32,23 @@ import org.littletonrobotics.junction.Logger;
 public class AutonomousPlanner {
 
     public enum FieldPosition {
-        None;
+        None,
+
+        LittleBalls,
+        
+        LeftBalls,
+        RightBalls,
+        
+        OutPost,
+
+        LeftStart,
+        MiddleStart,
+        RightStart,
+
+        LeftShoot,
+        MiddleShoot,
+        RightShoot;
+
         private Pose2d flipPose2d(Pose2d pose) {
             if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red) {
                 return FlippingUtil.flipFieldPose(pose);
@@ -51,7 +67,7 @@ public class AutonomousPlanner {
         GroundCollect;
 
         public boolean canDoAction(FieldPosition position) {
-            if (this == None) {
+            if (true) {
                 return true;
             }
             return false;
@@ -208,7 +224,7 @@ public class AutonomousPlanner {
 
     private PathPlannerPath findPath(FieldPosition start, FieldPosition end) {
         String pathFileName = start + "-" + end;
-        PathPlannerPath path = loadPath(pathFileName.toLowerCase());
+        PathPlannerPath path = loadPath(pathFileName.toUpperCase());
         if (start == FieldPosition.None || end == FieldPosition.None) {
             return null;
         }

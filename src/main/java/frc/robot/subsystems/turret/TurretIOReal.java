@@ -38,7 +38,7 @@ public class TurretIOReal implements TurretIO {
     private final SparkMaxConfig config;
     private final SparkAnalogSensor m_Turret_Encoder;
     private SparkClosedLoopController m_TurretMotorController;
-    private final double turretZero = 192.111;
+    private final double turretZero = 183.970;
     private REVLibError lastErr;
 
     public TurretIOReal() {
@@ -117,6 +117,10 @@ public class TurretIOReal implements TurretIO {
     @Override
     public void setTarget(Angle inputAngle) {
         Angle result = Units.Radians.of(MathUtil.angleModulus(inputAngle.in(Radians)));
+        if(result.gte( Units.Degrees.of(FORWARD_LIMIT)) || result.lte(Units.Degrees.of(REVERSE_LIMIT))){
+            return;
+
+        }
         result = Units.Degrees.of(MathUtil.clamp(result.in(Degrees), REVERSE_LIMIT, FORWARD_LIMIT));
         result = result.plus(Units.Degrees.of(turretZero));
         Logger.recordOutput("Turret/rawSetpoint", result.in(Degrees));

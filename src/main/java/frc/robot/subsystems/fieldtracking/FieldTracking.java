@@ -26,7 +26,7 @@ public class FieldTracking extends SubsystemBase {
     private final SwerveDrive swerveDrive;
     private final FieldTrackingIO io;
     private final FieldTrackingIOInputsAutoLogged inputs = new FieldTrackingIOInputsAutoLogged();
-    private final AprilTagFieldLayout fieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
+    private final AprilTagFieldLayout fieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltWelded);
 
     public FieldTracking(final SwerveDrive swerveDrive, final FieldTrackingIO io) {
         this.sidePidController = new ProfiledPIDController(2.5, 0.001, .1, new Constraints(1000, 1000));
