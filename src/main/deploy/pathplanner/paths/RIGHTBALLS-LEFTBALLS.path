@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 8.788368852459016,
-        "y": 3.5893114754098345
+        "x": 7.881819672131147,
+        "y": 4.538196721311475
       },
       "isLocked": false,
       "linkedName": "RIGHTTBALLS"
@@ -20,8 +20,8 @@
         "y": 5.796188524590163
       },
       "prevControl": {
-        "x": 6.8530655737704915,
-        "y": 5.796188524590163
+        "x": 7.824311475409836,
+        "y": 5.034204918032787
       },
       "nextControl": null,
       "isLocked": false,
@@ -31,7 +31,19 @@
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "",
+      "waypointRelativePos": 0,
+      "endWaypointRelativePos": 1.0,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Intake"
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 4.0,
     "maxAcceleration": 3.0,

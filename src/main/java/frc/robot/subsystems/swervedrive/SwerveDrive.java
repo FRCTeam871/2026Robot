@@ -105,7 +105,7 @@ public class SwerveDrive extends SubsystemBase {
                     omegarad.getAsDouble() * Constants.MAX_ROTATION_SPEED_RDPS);
 
                     if(wiggle){
-                        chassisSpeeds.vyMetersPerSecond += Math.sin(Timer.getTimestamp()*Math.PI*8) * (Constants.MAX_SPEED_MPS*.2);
+                        chassisSpeeds.vyMetersPerSecond += Math.sin(Timer.getTimestamp()*Math.PI*8) * (Constants.MAX_SPEED_MPS*.4);
                     }
                     Logger.recordOutput("Drive/targetSpeeds", chassisSpeeds);
 
