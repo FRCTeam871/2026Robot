@@ -163,7 +163,7 @@ public class RobotContainer {
 
         controls.runIntakePiston().toggleOnTrue(intake.sendIntakeIn()); // first
         controls.runIntake().whileTrue(intake.runIntakeMotor(() -> -1));
-        controls.regurgitate().whileTrue(intake.runIntakeMotor(() -> 1));
+        controls.regurgitate().whileTrue(intake.runIntakeMotor(() -> 1).alongWith(swerveDrive.regurgitateForwards()));
 
         // controls.runSequence().whileTrue(sequencing.shooterCommand(() -> Units.RPM.of(2500)));
 

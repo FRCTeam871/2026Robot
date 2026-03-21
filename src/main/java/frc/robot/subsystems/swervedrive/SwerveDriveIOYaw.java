@@ -13,9 +13,9 @@ public class SwerveDriveIOYaw implements SwerveDriveIO {
 
     public SwerveDriveIOYaw(final AHRS gyro) {
         this.gyro = gyro;
-        SmartDashboard.putData("resetGyro", Commands.runOnce(() -> setCurrentAngle(0)).ignoringDisable(true));
+        SmartDashboard.putData("resetGyro", Commands.runOnce(() -> setCurrentAngle(0)).ignoringDisable(true)); // blue
         SmartDashboard.putData(
-                "resetGyro180", Commands.runOnce(() -> setCurrentAngle(180.0)).ignoringDisable(true));
+                "resetGyro180", Commands.runOnce(() -> setCurrentAngle(180.0)).ignoringDisable(true));  // red
         gyro.zeroYaw();
     }
 

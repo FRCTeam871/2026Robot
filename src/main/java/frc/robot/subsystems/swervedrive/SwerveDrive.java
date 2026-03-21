@@ -63,6 +63,8 @@ public class SwerveDrive extends SubsystemBase {
     private ProfiledPIDController forwardPidController = new ProfiledPIDController(2.5, 0.001, .1,
             new Constraints(1000, 1000));
 
+    public boolean shakeAndBake;
+
     public SwerveDrive(final SwerveDriveIO io, final SwerveModule... swerveModules) {
         yawPidController.enableContinuousInput(0, 360);
         this.swerveModules = swerveModules;
@@ -107,6 +109,9 @@ public class SwerveDrive extends SubsystemBase {
                     if(wiggle){
                         chassisSpeeds.vyMetersPerSecond += Math.sin(Timer.getTimestamp()*Math.PI*8) * (Constants.MAX_SPEED_MPS*.4);
                     }
+                    if(shakeAndBake){
+                        chassisSpeeds.vxMetersPerSecond += Math.sin(Timer.getTimestamp()*Math.PI*8) * (Constants.MAX_SPEED_MPS*.4);
+                    }
                     Logger.recordOutput("Drive/targetSpeeds", chassisSpeeds);
 
             if (fieldOrientation) {
@@ -145,6 +150,9 @@ public class SwerveDrive extends SubsystemBase {
 
     public Command wiggle(){
         return Commands.run(()-> wiggle = true).finallyDo(()-> wiggle = false);
+    }
+     public Command regurgitateForwards(){
+        return Commands.run(()-> shakeAndBake = true).finallyDo(()-> shakeAndBake = false);
     }
 
     @Override
